@@ -1,44 +1,44 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'logic/Weather.dart';
 main(){
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget{
-  final Tester tester = Tester();
+class MyApp extends StatefulWidget{
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final Weather weather = Weather("Hamedan");
+  String text = "hi";
 
   @override
   Widget build(BuildContext context) {
-    tester.output();
+    weather.getCurrentWeather();
     return(
       MaterialApp(
         home: Scaffold(
           body: SafeArea(
             child: Container(
               margin: EdgeInsets.symmetric(vertical: 20 , horizontal: 10),
-              child: Column(children: <Widget>[
-                Text(tester.output()),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch ,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                Text(text),
+                FlatButton(color: Colors.blue,
+                onPressed: () {setState( () {
+
+                  });
+                },)
               ],),
             ),
           ),
         ),
       )
     );
-  }
-}
-
-class Tester{
-
-  String output() {
-    var listOfInts = [1, 2, 3, 4, 5, 6, 7];
-    var listOfStrings = [
-      '#0',
-      for (var i in listOfInts) '#$i'
-    ];
-    for (String num in listOfStrings){
-      print(num+ '\u{1f606}');
-    }
-    return "Done";
   }
 }
 
