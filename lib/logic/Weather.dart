@@ -9,17 +9,16 @@ class Weather{
   String _city;
   HttpRequestManager _requestManager;
 
-  Weather(String city){
+  Weather({String city}){
     this._city = city;
     _requestManager = HttpRequestManager(city: city);
   }
 
   Future<String> getCurrentWeather() async{
+    _requestManager.clearResponseBody();
     String weatherData = await _requestManager.sendRequest();
-    print(weatherData);
-    // if(weatherData != null)
-    //   String tempFeelsLike = jsonDecode(weatherData)['main']['feels_like'];
-    // print(tempFeelsLike);
+    print(weatherData.trim());
     return weatherData;
   }
+
 }

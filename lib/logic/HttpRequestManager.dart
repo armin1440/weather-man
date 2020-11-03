@@ -32,4 +32,8 @@ class HttpRequestManager{
     });
     return responseBody;
   }
+
+  void clearResponseBody(){
+    responseBody = '';
+  }
 }

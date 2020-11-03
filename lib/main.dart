@@ -13,7 +13,7 @@ class MyApp extends StatefulWidget{
 }
 
 class _MyAppState extends State<MyApp> {
-  final Weather weather = Weather("Hamedan");
+  final Weather weather = Weather(city: "Hamedan");
   String text = "hi";
 
   @override
