@@ -16,7 +16,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    weather.getCurrentWeather();
     return(
       MaterialApp(
         home: Scaffold(
@@ -29,8 +28,10 @@ class _MyAppState extends State<MyApp> {
                 children: <Widget>[
                 Text(text),
                 FlatButton(color: Colors.blue,
-                onPressed: () {setState( () {
-
+                onPressed: () async {
+                  String temp = await weather.getCurrentWeather();
+                  setState(() {
+                    text = temp;
                   });
                 },)
               ],),
