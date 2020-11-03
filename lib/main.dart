@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:learner/Interface/WeatherScreen.dart';
 import 'logic/Weather.dart';
 import 'Interface/LoadingScreen.dart';
 main(){
@@ -19,8 +20,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return(
       MaterialApp(
-        home: Scaffold(
-          body: LoadingScreen()
+        home: SafeArea(
+          child: Scaffold(
+            body: WeatherScreen()
+          ),
         ),
       )
     );
