@@ -7,6 +7,7 @@ const Map jsonNotation = {'temperature': 'main temp',
 'weather' : 'weather 0 main'};
 
 class WeatherScreen extends StatefulWidget {
+
   @override
   _WeatherScreenState createState() => _WeatherScreenState();
 }
@@ -20,26 +21,26 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.lightBlueAccent,
         body: Container(
           color: Colors.lightBlueAccent,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Expanded(
-                    flex: 10,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset("images/rain.png"),
-                    )
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                Expanded(
-                  flex: 6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Expanded(
+                  flex: 10,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
+                    child: Image.asset("images/rain.png"),
+                  )
+              ),
+              SizedBox(
+                height: 50,
+              ),
+              Expanded(
+                flex: 6,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
@@ -55,11 +56,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 40,
-                ),
-                Expanded(
-                  flex: 1,
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              Expanded(
+                flex: 1,
+                child: Center(
                   child: DecoratedBox(
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurple ),
                     child: FlatButton(
@@ -92,14 +95,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 50,
-                )
-              ],
-            ),
+              ),
+              SizedBox(
+                height: 50,
+              )
+            ],
           ),
         ),
-        backgroundColor: Colors.lightBlueAccent,
       ),
     );
   }

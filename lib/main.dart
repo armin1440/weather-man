@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:learner/Interface/CitiesScreen.dart';
 import 'package:learner/Interface/WeatherScreen.dart';
 import 'logic/Weather.dart';
 import 'Interface/LoadingScreen.dart';
@@ -22,7 +23,7 @@ class _MyAppState extends State<MyApp> {
       MaterialApp(
         home: SafeArea(
           child: Scaffold(
-            body: WeatherScreen()
+            body: CitiesScreen()
           ),
         ),
       )
