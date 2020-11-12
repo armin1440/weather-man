@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'CityCard.dart';
+import 'package:learner/logic/Weather.dart';
+import 'ColorfulBox.dart';
 
 class CitiesScreen extends StatefulWidget{
 
@@ -8,9 +9,13 @@ class CitiesScreen extends StatefulWidget{
 }
 
 class _CitiesScreenState extends State<CitiesScreen>{
+  List<Weather> weatherData = List<Weather>();
+  String cityName;
+  List<Widget> cities = List<Widget>();
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
@@ -20,11 +25,20 @@ class _CitiesScreenState extends State<CitiesScreen>{
               decoration: BoxDecoration(color: Colors.blueAccent, borderRadius: BorderRadius.circular(10),
               gradient: LinearGradient(colors: [Colors.blue, Colors.purple]) ),
               child: ColorfulBox(Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                 child: ListTile(
-                  title: TextField(),
+                  title: TextField(onChanged: (value){
+                    cityName = value;
+                  },
+                  style: TextStyle(fontSize: 20, color: Colors.white),),
                   trailing: FlatButton(
-                    child: Icon(Icons.search, size: 30, color: Colors.white,),
+                    child: Icon(Icons.add, size: 30, color: Colors.white,),
+                    onPressed: (){
+                      setState(() {
+                        addCity(cityName);
+                        print(cities.length);
+                      });
+                    },
                   ),
                 ),
               ),
@@ -35,9 +49,7 @@ class _CitiesScreenState extends State<CitiesScreen>{
               child: ListView(
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
-                children: <Widget>[
-                  ColorfulBox(Text("hi", style: TextStyle(fontSize: 20),)),
-                ],
+                children: cities,
               ),
             )
           ],
@@ -45,4 +57,14 @@ class _CitiesScreenState extends State<CitiesScreen>{
       ),
     );
   }
+
+  void addCity(String city){
+    weatherData.add(Weather(city: city));
+    Container toBeAddedCity = Container(
+      margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+      child:  Text(city, style: TextStyle(fontSize: 22, color: Colors.white),),
+    );
+    cities.add(ColorfulBox(toBeAddedCity));
+  }
+
 }

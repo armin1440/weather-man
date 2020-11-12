@@ -21,4 +21,7 @@ class Weather{
     return weatherData;
   }
 
+  String get getCity{
+    return _city;
+  }
 }

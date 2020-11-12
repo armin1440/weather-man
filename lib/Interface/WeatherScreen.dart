@@ -3,19 +3,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:learner/logic/Weather.dart';
 const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
-const Map jsonNotation = {'temperature': 'main temp',
-'weather' : 'weather 0 main'};
+const Map jsonNotation = {'temperature': 'main temp', 'weather' : 'weather 0 main'};
 
 class WeatherScreen extends StatefulWidget {
+  final Weather cityWeather; //=  Weather(city: "Hamedan" );
+
+  WeatherScreen(this.cityWeather);
 
   @override
   _WeatherScreenState createState() => _WeatherScreenState();
+
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
-  final Weather weather = Weather(city: "Hamedan" );
-  Map weatherData = {'city' : 'Hamedan', 'temperature' : 'N/A',
-  'weather' : 'N/A'};
+  Map weatherDataMap;
+
+  @override
+  void initState() {
+    String cityName = widget.cityWeather.getCity;
+    weatherDataMap = { 'city' : cityName , 'temperature' : 'N/A' , 'weather' : 'N/A' };
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,15 +52,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      Center(child: Text("${weatherData['city']}", style: informationTextStyle.copyWith(fontSize: 33),)),
+                      Center(child: Text("${weatherDataMap['city']}", style: informationTextStyle.copyWith(fontSize: 33),)),
                       SizedBox(
                         height: 30,
                       ),
-                      Text("It's ${weatherData['weather']} ", style: informationTextStyle),
+                      Text("It's ${weatherDataMap['weather']} ", style: informationTextStyle),
                       SizedBox(
                         height: 20,
                       ),
-                      Text("${weatherData['temperature']}", style: informationTextStyle),
+                      Text("${weatherDataMap['temperature']}", style: informationTextStyle),
                     ],
                   ),
                 ),
@@ -69,20 +77,20 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       child: Text("update", style: informationTextStyle),
                       onPressed: () async{
                         String rawData = '';
-                        rawData = await weather.getCurrentWeather();
+                        rawData = await widget.cityWeather.getCurrentWeather();
                         int i = 0;
                         while(rawData.isEmpty && i < 5){
-                          rawData = await weather.getCurrentWeather();
+                          rawData = await widget.cityWeather.getCurrentWeather();
                           i++;
                         }
                         if (rawData.isNotEmpty) {
                           setState(() {
-                            for (String key in weatherData.keys) {
+                            for (String key in weatherDataMap.keys) {
                               if(!jsonNotation.containsKey(key))
                                 continue;
                               String jsonSequence = jsonNotation[key];
                               List<String> sequence = jsonSequence.split(" ");
-                              weatherData[key] =
+                              weatherDataMap[key] =
                               sequence.length == 3 ?
                               jsonDecode(rawData)[sequence.elementAt(0)][int.parse(sequence.elementAt(1))]
                               [sequence.elementAt(2)] :
