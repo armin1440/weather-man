@@ -19,14 +19,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return(
-      MaterialApp(
-        home: SafeArea(
-          child: Scaffold(
-            body: CitiesScreen()
-          ),
-        ),
-      )
+    return MaterialApp(
+        initialRoute: CitiesScreen.id ,
+        routes: {
+          LoadingScreen.id: (context) => LoadingScreen(),
+          CitiesScreen.id: (context) => CitiesScreen(),
+          WeatherScreen.id: (context) => WeatherScreen(weather),
+        },
     );
   }
 }

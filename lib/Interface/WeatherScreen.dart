@@ -6,13 +6,12 @@ const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 
 const Map jsonNotation = {'temperature': 'main temp', 'weather' : 'weather 0 main'};
 
 class WeatherScreen extends StatefulWidget {
+  static const String id = "Weather_Screen";
   final Weather cityWeather; //=  Weather(city: "Hamedan" );
 
   WeatherScreen(this.cityWeather);
-
   @override
   _WeatherScreenState createState() => _WeatherScreenState();
-
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
@@ -20,9 +19,36 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   @override
   void initState() {
+    super.initState();
     String cityName = widget.cityWeather.getCity;
     weatherDataMap = { 'city' : cityName , 'temperature' : 'N/A' , 'weather' : 'N/A' };
-    super.initState();
+    updateWeather();
+  }
+
+  void updateWeather() async{
+    String rawData = '';
+    rawData = await widget.cityWeather.getCurrentWeather();
+    int i = 0;
+    while(rawData.isEmpty && i < 5){
+      rawData = await widget.cityWeather.getCurrentWeather();
+      i++;
+    }
+    if (rawData.isNotEmpty) {
+      setState(() {
+        for (String key in weatherDataMap.keys) {
+          if(!jsonNotation.containsKey(key))
+            continue;
+          String jsonSequence = jsonNotation[key];
+          List<String> sequence = jsonSequence.split(" ");
+          weatherDataMap[key] =
+          sequence.length == 3 ?
+          jsonDecode(rawData)[sequence.elementAt(0)][int.parse(sequence.elementAt(1))]
+          [sequence.elementAt(2)] :
+          jsonDecode(rawData)[sequence.elementAt(
+              0)][sequence.elementAt(1)];
+        }
+      });
+    }
   }
 
   @override
@@ -75,31 +101,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurple ),
                     child: FlatButton(
                       child: Text("update", style: informationTextStyle),
-                      onPressed: () async{
-                        String rawData = '';
-                        rawData = await widget.cityWeather.getCurrentWeather();
-                        int i = 0;
-                        while(rawData.isEmpty && i < 5){
-                          rawData = await widget.cityWeather.getCurrentWeather();
-                          i++;
-                        }
-                        if (rawData.isNotEmpty) {
-                          setState(() {
-                            for (String key in weatherDataMap.keys) {
-                              if(!jsonNotation.containsKey(key))
-                                continue;
-                              String jsonSequence = jsonNotation[key];
-                              List<String> sequence = jsonSequence.split(" ");
-                              weatherDataMap[key] =
-                              sequence.length == 3 ?
-                              jsonDecode(rawData)[sequence.elementAt(0)][int.parse(sequence.elementAt(1))]
-                              [sequence.elementAt(2)] :
-                              jsonDecode(rawData)[sequence.elementAt(
-                                  0)][sequence.elementAt(1)];
-                            }
-                          });
-                        }
-                      }
+                      onPressed: () => updateWeather(),
                     ),
                   ),
                 ),

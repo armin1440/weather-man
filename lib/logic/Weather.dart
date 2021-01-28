@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'HttpRequestManager.dart';
 
-//This class has information about weather forecast of a certain city
+//This class contains information about weather forecast of a certain city.
 class Weather{
-  var _weatherForecast;
+  // var _weatherForecast;
   String _city;
   HttpRequestManager _requestManager;
 

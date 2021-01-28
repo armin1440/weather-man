@@ -1,70 +1,81 @@
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:learner/Interface/WeatherScreen.dart';
 import 'package:learner/logic/Weather.dart';
 import 'ColorfulBox.dart';
 
-class CitiesScreen extends StatefulWidget{
-
+class CitiesScreen extends StatefulWidget {
+  static const String id = "Cities_Screen";
   @override
   _CitiesScreenState createState() => _CitiesScreenState();
 }
 
-class _CitiesScreenState extends State<CitiesScreen>{
+class _CitiesScreenState extends State<CitiesScreen> {
+  final TextEditingController _textEditingController = TextEditingController();
   List<Weather> weatherData = List<Weather>();
   String cityName;
   List<Widget> cities = List<Widget>();
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-        child: Column(
-          children: <Widget>[
-            DecoratedBox(
-              decoration: BoxDecoration(color: Colors.blueAccent, borderRadius: BorderRadius.circular(10),
-              gradient: LinearGradient(colors: [Colors.blue, Colors.purple]) ),
-              child: ColorfulBox(Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                child: ListTile(
-                  title: TextField(onChanged: (value){
-                    cityName = value;
-                  },
-                  style: TextStyle(fontSize: 20, color: Colors.white),),
+    return GestureDetector(
+      // onDoubleTap:  (){ Navigator.pushNamed(context, WeatherScreen.id); } ,
+      child: Scaffold(
+        backgroundColor: Colors.cyan,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+            child: Column(
+              children: <Widget>[
+                ColorfulBox(ListTile(
+                  title: TextField(
+                    controller: _textEditingController,
+                    style: TextStyle(fontSize: 20, color: Colors.white),),
                   trailing: FlatButton(
                     child: Icon(Icons.add, size: 30, color: Colors.white,),
-                    onPressed: (){
+                    onPressed: () {
                       setState(() {
-                        addCity(cityName);
+                        addCity(_textEditingController.text);
+                        _textEditingController.clear();
                         print(cities.length);
                       });
                     },
                   ),
                 ),
-              ),
-              )
+                    ),
+                SizedBox(height: 30,),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    itemCount: cities.length,
+                    itemBuilder: (context, index) => cities[index],
+                  ),
+                )
+              ],
             ),
-            SizedBox(height: 30,),
-            Expanded(
-              child: ListView(
-                shrinkWrap: true,
-                scrollDirection: Axis.vertical,
-                children: cities,
-              ),
-            )
-          ],
+          ),
         ),
       ),
     );
   }
 
-  void addCity(String city){
+  void addCity(String city) {
     weatherData.add(Weather(city: city));
-    Container toBeAddedCity = Container(
-      margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      child:  Text(city, style: TextStyle(fontSize: 22, color: Colors.white),),
+    cities.add(Padding(
+        child: ColorfulBox(
+            FlatButton(
+              child: ListTile(leading: Text(city, style: TextStyle(fontSize: 20, color: Colors.white),),
+                trailing: Icon(Icons.ac_unit),
+              ),
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => WeatherScreen(Weather(city: city))) );
+              },
+            )
+        ),
+        padding: EdgeInsets.only(bottom: 10.0)
+    )
     );
-    cities.add(ColorfulBox(toBeAddedCity));
   }
-
 }

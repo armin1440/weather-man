@@ -10,7 +10,10 @@ class ColorfulBox extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(color: Colors.blueAccent, borderRadius: BorderRadius.circular(10),
       gradient: LinearGradient(colors: [Colors.blue, Colors.purple]) ),
-      child: widget
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        child: widget,
+      ),
     );
   }
 }
