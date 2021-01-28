@@ -23,8 +23,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   void initState() {
     super.initState();
     cityWeather = Weather(city: widget.city);
-    String cityName = cityWeather.getCity;
-    weatherDataMap = { 'city' : cityName , 'temperature' : 'N/A' , 'weather' : 'N/A' };
+    weatherDataMap = { 'city' : widget.city , 'temperature' : 'N/A' , 'weather' : 'N/A' };
     updateWeather();
   }
 
@@ -47,8 +46,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           sequence.length == 3 ?
           jsonDecode(rawData)[sequence.elementAt(0)][int.parse(sequence.elementAt(1))]
           [sequence.elementAt(2)] :
-          jsonDecode(rawData)[sequence.elementAt(
-              0)][sequence.elementAt(1)];
+          jsonDecode(rawData)[sequence.elementAt(0)][sequence.elementAt(1)];
         }
       });
     }
