@@ -6,31 +6,34 @@ const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 
 const Map jsonNotation = {'temperature': 'main temp', 'weather' : 'weather 0 main'};
 
 class WeatherScreen extends StatefulWidget {
-  static const String id = "Weather_Screen";
-  final Weather cityWeather; //=  Weather(city: "Hamedan" );
+  // final Weather cityWeather;
+  final String city;
+  // WeatherScreen(this.cityWeather);
+  WeatherScreen(this.city);
 
-  WeatherScreen(this.cityWeather);
-  @override
+    @override
   _WeatherScreenState createState() => _WeatherScreenState();
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
   Map weatherDataMap;
+  Weather cityWeather;
 
   @override
   void initState() {
     super.initState();
-    String cityName = widget.cityWeather.getCity;
+    cityWeather = Weather(city: widget.city);
+    String cityName = cityWeather.getCity;
     weatherDataMap = { 'city' : cityName , 'temperature' : 'N/A' , 'weather' : 'N/A' };
     updateWeather();
   }
 
   void updateWeather() async{
     String rawData = '';
-    rawData = await widget.cityWeather.getCurrentWeather();
+    rawData = await cityWeather.getCurrentWeather();
     int i = 0;
     while(rawData.isEmpty && i < 5){
-      rawData = await widget.cityWeather.getCurrentWeather();
+      rawData = await cityWeather.getCurrentWeather();
       i++;
     }
     if (rawData.isNotEmpty) {

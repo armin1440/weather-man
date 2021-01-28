@@ -1,12 +1,11 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:learner/Interface/WeatherScreen.dart';
 import 'package:learner/logic/Weather.dart';
 import 'ColorfulBox.dart';
+import 'CityTile.dart';
 
 class CitiesScreen extends StatefulWidget {
-  static const String id = "Cities_Screen";
   @override
   _CitiesScreenState createState() => _CitiesScreenState();
 }
@@ -64,18 +63,11 @@ class _CitiesScreenState extends State<CitiesScreen> {
   void addCity(String city) {
     weatherData.add(Weather(city: city));
     cities.add(Padding(
-        child: ColorfulBox(
-            FlatButton(
-              child: ListTile(leading: Text(city, style: TextStyle(fontSize: 20, color: Colors.white),),
-                trailing: Icon(Icons.ac_unit),
-              ),
-              onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => WeatherScreen(Weather(city: city))) );
-              },
-            )
-        ),
+        child: CityTile(city),
         padding: EdgeInsets.only(bottom: 10.0)
     )
     );
   }
 }
+
+// onTap: Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => CitiesScreen() ) ),
