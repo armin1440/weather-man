@@ -4,12 +4,7 @@ import 'package:learner/logic/Data.dart';
 import 'ColorfulBox.dart';
 import 'package:provider/provider.dart';
 
-class CitiesScreen extends StatefulWidget {
-  @override
-  _CitiesScreenState createState() => _CitiesScreenState();
-}
-
-class _CitiesScreenState extends State<CitiesScreen> {
+class CitiesScreen extends StatelessWidget {
   final TextEditingController _textEditingController = TextEditingController();
 
   @override
@@ -28,21 +23,23 @@ class _CitiesScreenState extends State<CitiesScreen> {
                 trailing: FlatButton(
                   child: Icon(Icons.add, size: 30, color: Colors.white,),
                   onPressed: () {
-                    setState(() {
                       Provider.of<Data>(context, listen: false).addCity(_textEditingController.text);
                       _textEditingController.clear();
-                    });
                   },
                 ),
               ),
                   ),
               SizedBox(height: 30,),
               Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: Provider.of<Data>(context).widgetNumbers(),
-                  itemBuilder: (context, index) => Provider.of<Data>(context).cityWidget[index],
+                child: Consumer<Data>(
+                  builder: (context, data, child){
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      itemCount: Provider.of<Data>(context).widgetNumbers(),
+                      itemBuilder: (context, index) => Provider.of<Data>(context).cityWidget[index],
+                    );
+                  },
                 ),
               )
             ],
@@ -52,23 +49,5 @@ class _CitiesScreenState extends State<CitiesScreen> {
     );
   }
 
-  // void removeCity(String city){
-  //   cityNames.remove(city);
-  //   for(CityTile cityTile in cityWidgets){
-  //     if(cityTile.city == city){
-  //       cityWidgets.remove(cityTile);
-  //     }
-  //   }
-  // }
-  //
-  // void addCity(String city) {
-  //   // Function delete = (String sth) {
-  //   //   setState(() {
-  //   //     removeCity(sth);
-  //   //   });
-  //   // };
-  //   CityTile cityTile = CityTile(city);
-  //   cityWidgets.add(cityTile);
-  // }
 }
 
