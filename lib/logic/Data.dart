@@ -12,7 +12,7 @@ class Data extends ChangeNotifier{
   void addCity(String city){
     if(!cityExists(city) && city.isNotEmpty){
       _cityWidgets.add(CityTile(city));
-      _weatherDataMaps.add({'city': city, 'temperature': 'N/A', 'weather': 'N/A'});
+      _weatherDataMaps.add({'city': city, 'temperature': '?', 'weather': '?'});
       notifyListeners();
     }
   }
@@ -64,11 +64,15 @@ class Data extends ChangeNotifier{
             continue;
           String jsonSequence = jsonNotation[key];
           List<String> sequence = jsonSequence.split(" ");
-          weatherDataMap[key] =
-          sequence.length == 3 ?
-          jsonDecode(rawData)[sequence.elementAt(0)][int.parse(sequence.elementAt(1))]
-          [sequence.elementAt(2)] :
-          jsonDecode(rawData)[sequence.elementAt(0)][sequence.elementAt(1)];
+          if(sequence.length == 3)
+            weatherDataMap[key] = jsonDecode(rawData)[sequence.elementAt(0)][int.parse(sequence.elementAt(1))][sequence.elementAt(2)]; //This is weather condition
+          else {
+            String temperature = jsonDecode(rawData)[sequence.elementAt(0)][sequence.elementAt(1)].toString(); //This is temperature
+            temperature = temperature.substring(0,2);
+            if(temperature.contains('.'))
+              temperature = temperature.substring(0,1);
+            weatherDataMap[key] = temperature;
+          }
         }
     }
     notifyListeners();

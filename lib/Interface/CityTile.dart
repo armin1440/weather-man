@@ -3,6 +3,7 @@ import 'ColorfulBox.dart';
 import 'WeatherScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:learner/logic/Data.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 class CityTile extends StatelessWidget{
   final String _city;
@@ -18,9 +19,23 @@ class CityTile extends StatelessWidget{
             onHorizontalDragUpdate: (details) => Provider.of<Data>(context, listen: false).removeCity(_city),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => WeatherScreen(city))),
             child: ListTile(leading: Text(city, style: TextStyle(fontSize: 20, color: Colors.white),),
-              trailing: Icon(Icons.ac_unit),
-            ),
-          )
+                trailing: SizedBox(width: 80,
+                  child: Row(children: <Widget>[
+                    Expanded(child: Text("${Provider.of<Data>(context).cityWeather(city)['temperature']}"), flex: 2,),
+                    Expanded(child: Padding(
+                      padding: EdgeInsets.only(top: 1),
+                      child: BoxedIcon(WeatherIcons.celsius),
+                      ),
+                      flex: 1,
+                    ),
+                    // SizedBox(width: 20,),
+                    Expanded(child: BoxedIcon(WeatherIcons.cloudy), flex: 6,),
+                    //TODO: implement changing icon
+                  ],
+                  ),
+                ),
+              ),
+          ),
       ),
     );
   }
@@ -28,5 +43,4 @@ class CityTile extends StatelessWidget{
   String get city{
     return _city;
   }
-
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:learner/logic/Data.dart';
 import 'package:provider/provider.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
@@ -24,7 +25,7 @@ class WeatherScreen extends StatelessWidget {
                   flex: 10,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
-                    child: Image.asset("images/rain.png"),
+                    child: BoxedIcon(WeatherIcons.day_rain_wind, size: 180,),
                   )
               ),
               SizedBox(
