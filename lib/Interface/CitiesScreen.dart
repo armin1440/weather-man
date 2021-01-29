@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:learner/logic/Data.dart';
 import 'ColorfulBox.dart';
-import 'CityTile.dart';
+import 'package:provider/provider.dart';
 
 class CitiesScreen extends StatefulWidget {
   @override
@@ -10,14 +11,6 @@ class CitiesScreen extends StatefulWidget {
 
 class _CitiesScreenState extends State<CitiesScreen> {
   final TextEditingController _textEditingController = TextEditingController();
-  List<CityTile> cityWidgets = List<CityTile>();
-  List<String> cityNames = List<String>();
-
-  @override
-  void initState() {
-    super.initState();
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +29,7 @@ class _CitiesScreenState extends State<CitiesScreen> {
                   child: Icon(Icons.add, size: 30, color: Colors.white,),
                   onPressed: () {
                     setState(() {
-                      addCity(_textEditingController.text);
+                      Provider.of<Data>(context, listen: false).addCity(_textEditingController.text);
                       _textEditingController.clear();
                     });
                   },
@@ -48,8 +41,8 @@ class _CitiesScreenState extends State<CitiesScreen> {
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
-                  itemCount: cityWidgets.length,
-                  itemBuilder: (context, index) => cityWidgets[index],
+                  itemCount: Provider.of<Data>(context).widgetNumbers(),
+                  itemBuilder: (context, index) => Provider.of<Data>(context).cityWidget[index],
                 ),
               )
             ],
@@ -59,23 +52,23 @@ class _CitiesScreenState extends State<CitiesScreen> {
     );
   }
 
-  void removeCity(String city){
-    cityNames.remove(city);
-    for(CityTile cityTile in cityWidgets){
-      if(cityTile.city == city){
-        cityWidgets.remove(cityTile);
-      }
-    }
-  }
-
-  void addCity(String city) {
-    Function delete = (String sth) {
-      setState(() {
-        removeCity(sth);
-      });
-    };
-    CityTile cityTile = CityTile(city, delete);
-    cityWidgets.add(cityTile);
-  }
+  // void removeCity(String city){
+  //   cityNames.remove(city);
+  //   for(CityTile cityTile in cityWidgets){
+  //     if(cityTile.city == city){
+  //       cityWidgets.remove(cityTile);
+  //     }
+  //   }
+  // }
+  //
+  // void addCity(String city) {
+  //   // Function delete = (String sth) {
+  //   //   setState(() {
+  //   //     removeCity(sth);
+  //   //   });
+  //   // };
+  //   CityTile cityTile = CityTile(city);
+  //   cityWidgets.add(cityTile);
+  // }
 }
 

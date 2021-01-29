@@ -19,7 +19,8 @@ class HttpRequestManager{
 
   Future<String> sendRequest() async{
     String url = website + "/data/2.5/weather?q=$_city&units=$units&appid=$appId";
-    var httpRequest = await _client.getUrl(Uri.parse(url))
+    // var httpRequest =
+    await _client.getUrl(Uri.parse(url))
         .then((HttpClientRequest request) {
           return request.close();
         })

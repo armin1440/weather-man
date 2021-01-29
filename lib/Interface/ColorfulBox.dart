@@ -8,8 +8,11 @@ class ColorfulBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: BoxDecoration(color: Colors.blueAccent, borderRadius: BorderRadius.circular(10),
-      gradient: LinearGradient(colors: [Colors.blue, Colors.purple]) ),
+      decoration: BoxDecoration(color: Colors.blueAccent,
+          borderRadius: BorderRadius.circular(10),
+          gradient: LinearGradient(colors:  [Colors.blue, Colors.purple] )
+      ),
+
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: widget,
