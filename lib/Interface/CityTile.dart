@@ -31,7 +31,6 @@ class CityTile extends StatelessWidget{
                     ),
                     // SizedBox(width: 20,),
                     Expanded(child: BoxedIcon(Provider.of<Data>(context).cityWeather(city)['icon']), flex: 6,),
-                    // Expanded(child: BoxedIcon(WeatherIcons.cloudy), flex: 6,),
                   ],
                   ),
                 ),

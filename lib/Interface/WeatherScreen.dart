@@ -41,9 +41,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         builder: (context, data, child){
                           return BoxedIcon(Provider.of<Data>(context).cityWeather(widget.city)['icon'], size: 180,);
                         },
-                        // child: BoxedIcon(Provider.of<Data>(context).cityWeather(widget.city)['icon'], size: 180,)
                     ),
-                    // child: BoxedIcon(WeatherIcons.thunderstorm, size: 180,),
                   )
               ),
               SizedBox(

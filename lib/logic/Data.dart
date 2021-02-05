@@ -39,10 +39,12 @@ class Data extends ChangeNotifier{
   List<CityTile> _cityWidgets = List<CityTile>();
   List<Map> _weatherDataMaps = List<Map>();
 
-  void addCity(String city){
+  void addCity(String city) async{
     if(!cityExists(city) && city.isNotEmpty){
-      _cityWidgets.add(CityTile(city));
       _weatherDataMaps.add({'city': city, 'temperature': '?', 'weather': '?', 'id': '803', 'icon': WeatherIcons.cloud_refresh});
+      bool isRealCity = await updateWeather(city);
+      if(isRealCity)
+        _cityWidgets.add(CityTile(city));
       notifyListeners();
     }
   }
@@ -80,17 +82,20 @@ class Data extends ChangeNotifier{
     return null;
   }
 
-  void updateWeather(String city) async{
+  Future<bool> updateWeather(String city) async{
     Map weatherDataMap = cityWeather(city);
     Weather cityWeatherData = Weather(city: city);
     String rawData = '';
-    rawData = await cityWeatherData.getCurrentWeather();
     int i = 0;
     while(rawData.isEmpty && i < 5){
       rawData = await cityWeatherData.getCurrentWeather();
       i++;
     }
-    if (rawData.isNotEmpty) {
+    if( rawData.isNotEmpty & rawData.contains("\"cod\":\"404\"") ){
+      removeCity(city);
+      return false;
+    }
+    else if (rawData.isNotEmpty) {
         for (String key in weatherDataMap.keys) {
           if(!jsonNotation.containsKey(key))
             continue;
@@ -118,6 +123,7 @@ class Data extends ChangeNotifier{
         // }
     }
     notifyListeners();
+    return true;
   }
 
   bool cityExists(String city){
