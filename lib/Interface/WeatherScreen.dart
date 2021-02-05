@@ -6,9 +6,21 @@ import 'package:weather_icons/weather_icons.dart';
 
 const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
-class WeatherScreen extends StatelessWidget {
+class WeatherScreen extends StatefulWidget {
   final String city;
   WeatherScreen(this.city);
+
+  @override
+  _WeatherScreenState createState() => _WeatherScreenState();
+}
+
+class _WeatherScreenState extends State<WeatherScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<Data>(context, listen: false).updateWeather(widget.city);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +37,13 @@ class WeatherScreen extends StatelessWidget {
                   flex: 10,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
-                    child: BoxedIcon(WeatherIcons.day_rain_wind, size: 180,),
+                    child: Consumer<Data>(
+                        builder: (context, data, child){
+                          return BoxedIcon(Provider.of<Data>(context).cityWeather(widget.city)['icon'], size: 180,);
+                        },
+                        // child: BoxedIcon(Provider.of<Data>(context).cityWeather(widget.city)['icon'], size: 180,)
+                    ),
+                    // child: BoxedIcon(WeatherIcons.thunderstorm, size: 180,),
                   )
               ),
               SizedBox(
@@ -37,18 +55,17 @@ class WeatherScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Consumer<Data>(
                     builder: (context, data, child){
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                      return ListView(
                         children: <Widget>[
-                          Center(child: Text("${Provider.of<Data>(context).cityWeather(city)['city']}", style: informationTextStyle.copyWith(fontSize: 33),)),
+                          Center(child: Text("${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['city']}", style: informationTextStyle.copyWith(fontSize: 33),)),
                           SizedBox(
                             height: 30,
                           ),
-                          Text("It's ${Provider.of<Data>(context).cityWeather(city)['weather']} ", style: informationTextStyle),
+                          Text("${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['weather']} ", style: informationTextStyle),
                           SizedBox(
                             height: 20,
                           ),
-                          Text("${Provider.of<Data>(context).cityWeather(city)['temperature']}", style: informationTextStyle),
+                          Text("${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['temperature']}", style: informationTextStyle),
                         ],
                       );
                     },
@@ -65,7 +82,7 @@ class WeatherScreen extends StatelessWidget {
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurple ),
                     child: FlatButton(
                       child: Text("update", style: informationTextStyle),
-                      onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(city),
+                      onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
                     ),
                   ),
                 ),
