@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:learner/logic/Data.dart';
 import 'ColorfulBox.dart';
 import 'package:provider/provider.dart';
+import 'OptionsScreen.dart';
 
 class CitiesScreen extends StatelessWidget {
   final TextEditingController _textEditingController = TextEditingController();
@@ -10,6 +11,10 @@ class CitiesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FlatButton(
+        color: Colors.green,
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OptionsScreen() )),
+      ),
       backgroundColor: Colors.cyan,
       body: SafeArea(
         child: Padding(
@@ -36,7 +41,7 @@ class CitiesScreen extends StatelessWidget {
                     return ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
-                      itemCount: Provider.of<Data>(context).widgetNumbers(),
+                      itemCount: Provider.of<Data>(context).cityNumbers(),
                       itemBuilder: (context, index) => Provider.of<Data>(context).cityWidget[index],
                     );
                   },

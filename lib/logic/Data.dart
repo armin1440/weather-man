@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:learner/Interface/CityTile.dart';
 import 'package:learner/logic/Weather.dart';
 import 'package:weather_icons/weather_icons.dart';
 
-const Map jsonNotation = {'temperature': 'main temp', 'weather' : 'weather 0 description', 'id' : 'weather 0 id' };
-const Map weatherIdToIcon = { 800: [WeatherIcons.day_sunny, WeatherIcons.night_clear] ,
+const Map jsonNotation = {'name': 'name','temperature': 'main temp', 'weather' : 'weather 0 description', 'id' : 'weather 0 id',
+  'humidity': 'main humidity', 'pressure': 'main pressure', 'wind speed': 'wind speed' };
+const Map weatherIdToIcon = {
+  0: WeatherIcons.cloud_refresh,
+  800: [WeatherIcons.day_sunny, WeatherIcons.night_clear] ,
   801: WeatherIcons.cloudy, 802: WeatherIcons.cloudy,
   803: WeatherIcons.cloudy, 804: WeatherIcons.cloudy,
   701: WeatherIcons.fog, 711: WeatherIcons.smoke,
@@ -34,17 +38,36 @@ const Map weatherIdToIcon = { 800: [WeatherIcons.day_sunny, WeatherIcons.night_c
   221: WeatherIcons.thunderstorm, 230: WeatherIcons.thunderstorm,
   231: WeatherIcons.thunderstorm, 232: WeatherIcons.thunderstorm,
 };
+const Map options = { 'humidity' : false, 'pressure': false, 'feels_like': false, 'wind speed': false};
+const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
 class Data extends ChangeNotifier{
   List<CityTile> _cityWidgets = List<CityTile>();
   List<Map> _weatherDataMaps = List<Map>();
+  List<Map> _weatherScreenWidgets = List<Map<String,List>>();
 
   void addCity(String city) async{
     if(!cityExists(city) && city.isNotEmpty){
-      _weatherDataMaps.add({'city': city, 'temperature': '?', 'weather': '?', 'id': '803', 'icon': WeatherIcons.cloud_refresh});
+      Map dataMap = {'name': city, 'temperature': '?', 'weather': '?', 'id': 0, 'icon': WeatherIcons.cloud_refresh};
+      _weatherDataMaps.add(dataMap);
       bool isRealCity = await updateWeather(city);
-      if(isRealCity)
+      if(isRealCity) {
+        city = dataMap['name'];
         _cityWidgets.add(CityTile(city));
+        Map<String,List<Widget>> cityToWidgets = { city: [
+          SizedBox(height: 30,),
+          Text("${dataMap['weather']}", style: informationTextStyle),
+          SizedBox(height: 20,),
+          Row(
+            children: [
+              Text("${dataMap['temperature']}", style: informationTextStyle),
+              BoxedIcon(WeatherIcons.celsius, size: 33, color: Colors.white,),
+            ],
+          ),
+        ]
+        };
+        _weatherScreenWidgets.add(cityToWidgets);
+      }
       notifyListeners();
     }
   }
@@ -69,13 +92,22 @@ class Data extends ChangeNotifier{
     }
   }
 
-  int widgetNumbers(){
+  int cityNumbers(){
     return _cityWidgets.length;
+  }
+
+  int weatherScreenWidgetNumbers(String city){
+    for(Map map in _weatherScreenWidgets){
+      if(map.containsKey(city)){
+        return map[city].length;
+      }
+    }
+    return null;
   }
 
   Map cityWeather(String city){
     for(Map weatherData in _weatherDataMaps){
-      if(weatherData['city'] == city){
+      if(weatherData['name'] == city){
         return weatherData;
       }
     }
@@ -97,7 +129,7 @@ class Data extends ChangeNotifier{
     }
     else if (rawData.isNotEmpty) {
         for (String key in weatherDataMap.keys) {
-          if(!jsonNotation.containsKey(key))
+          if(!jsonNotation.containsKey(key) || (options.containsKey(key) && options[key] == false))
             continue;
           String jsonSequence = jsonNotation[key];
           List<String> sequence = jsonSequence.split(" ");
@@ -107,7 +139,7 @@ class Data extends ChangeNotifier{
                 sequence.elementAt(1))][sequence.elementAt(
                 2)]; //This is weather condition
             // print(weatherDataMap[key]);
-          }else {
+          }else if(sequence.length == 2) {
             String temperature = jsonDecode(rawData)[sequence.elementAt(0)][sequence.elementAt(1)].toString(); //This is temperature
             if(temperature.length > 2)
               temperature = temperature.substring(0,2);
@@ -116,10 +148,15 @@ class Data extends ChangeNotifier{
             weatherDataMap[key] = temperature;
             // print(weatherDataMap[key]);
           }
+          else{
+            String name = jsonDecode(rawData)[sequence.elementAt(0)];
+            weatherDataMap[key] = name;
+          }
         }
-        setIcon(city);
+        setIcon(weatherDataMap['name']);
         // for(String key in weatherDataMap.keys){
         //   print("$key : $weatherDataMap[$key]");
+        //   break;
         // }
     }
     notifyListeners();
@@ -135,14 +172,21 @@ class Data extends ChangeNotifier{
     return false;
   }
 
-
-
   get weatherDataMaps{
     return _weatherDataMaps;
   }
 
   get cityWidget{
     return _cityWidgets;
+  }
+
+  List weatherScreenWidgets(String city){
+    for(Map map in _weatherScreenWidgets){
+      if( map.containsKey(city) ){
+        return map[city];
+      }
+    }
+    return null;
   }
 
   void setIcon(String city){
@@ -157,6 +201,22 @@ class Data extends ChangeNotifier{
     }
     else
       weatherData['icon']= weatherIdToIcon[weatherData['id']];
+  }
+
+  void addOption(String option){
+    options[option] = true;
+    for(Map map in _weatherDataMaps){
+      map[option] = '?';
+    }
+  }
+
+  int optionsNumber(){
+    int i=3;
+    for(bool state in options.values){
+      if(state == true)
+        i++;
+    }
+    return i;
   }
 
 }

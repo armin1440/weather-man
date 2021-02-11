@@ -47,25 +47,24 @@ class _WeatherScreenState extends State<WeatherScreen> {
               SizedBox(
                 height: 50,
               ),
+              Center(
+                  child: Text("${widget.city}",
+                    style: informationTextStyle.copyWith(fontSize: 33),
+                  ),
+              ),
+
               Expanded(
                 flex: 6,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Consumer<Data>(
                     builder: (context, data, child){
-                      return ListView(
-                        children: <Widget>[
-                          Center(child: Text("${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['city']}", style: informationTextStyle.copyWith(fontSize: 33),)),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Text("${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['weather']} ", style: informationTextStyle),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text("${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['temperature']}", style: informationTextStyle),
-                        ],
-                      );
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: Provider.of<Data>(context).weatherScreenWidgetNumbers(widget.city),
+                            itemBuilder: (context, index) => Provider.of<Data>(context).weatherScreenWidgets(widget.city)[index],
+                          );
                     },
                   ),
                 ),
