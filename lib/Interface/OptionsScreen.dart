@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:learner/logic/Data.dart';
+import 'package:provider/provider.dart';
 
 class OptionsScreen extends StatelessWidget {
   @override
@@ -16,7 +18,7 @@ class OptionsScreen extends StatelessWidget {
                 Option("Humidity"),
                 Option("Wind speed"),
                 Option("Pressure"),
-                Option("Feels like"),
+                Option("Feels_like"),
               ],
             ),
           ),
@@ -25,17 +27,28 @@ class OptionsScreen extends StatelessWidget {
   }
 }
 
-class Option extends StatelessWidget{
+class Option extends StatefulWidget{
   final String title;
   Option(this.title);
 
   @override
+  _OptionState createState() => _OptionState();
+}
+
+class _OptionState extends State<Option> {
+  Color color = Colors.black;
+  @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Text(title),
+      leading: Text(widget.title),
       trailing: RaisedButton(
-        color: Colors.black,
-        // onPressed: ,
+        color: color,
+        onPressed: () {
+          setState(() {
+            color = color == Colors.black ? Colors.blue : Colors.black;
+            Provider.of<Data>(context, listen:false).addOption(widget.title);
+          });
+        },
       ),
     );
   }

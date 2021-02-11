@@ -6,7 +6,7 @@ import 'package:learner/logic/Weather.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 const Map jsonNotation = {'name': 'name','temperature': 'main temp', 'weather' : 'weather 0 description', 'id' : 'weather 0 id',
-  'humidity': 'main humidity', 'pressure': 'main pressure', 'wind speed': 'wind speed' };
+  'humidity': 'main humidity', 'pressure': 'main pressure', 'wind speed': 'wind speed', "feels_like": 'main feels_like' };
 const Map weatherIdToIcon = {
   0: WeatherIcons.cloud_refresh,
   800: [WeatherIcons.day_sunny, WeatherIcons.night_clear] ,
@@ -17,6 +17,7 @@ const Map weatherIdToIcon = {
   741: WeatherIcons.fog, 751: WeatherIcons.sandstorm,
   761: WeatherIcons.dust, 762: WeatherIcons.volcano,
   771: WeatherIcons.rain_wind, 781: WeatherIcons.tornado,
+  600: WeatherIcons.snow,
   601: WeatherIcons.snow, 602: WeatherIcons.snow,
   611: WeatherIcons.snow, 612: WeatherIcons.snow,
   613: WeatherIcons.snow, 615: WeatherIcons.rain_mix,
@@ -38,7 +39,7 @@ const Map weatherIdToIcon = {
   221: WeatherIcons.thunderstorm, 230: WeatherIcons.thunderstorm,
   231: WeatherIcons.thunderstorm, 232: WeatherIcons.thunderstorm,
 };
-const Map options = { 'humidity' : false, 'pressure': false, 'feels_like': false, 'wind speed': false};
+final Map options = { 'humidity' : false, 'pressure': false, 'feels_like': false, 'wind speed': false};
 const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
 class Data extends ChangeNotifier{
@@ -48,14 +49,14 @@ class Data extends ChangeNotifier{
 
   void addCity(String city) async{
     if(!cityExists(city) && city.isNotEmpty){
-      Map dataMap = {'name': city, 'temperature': '?', 'weather': '?', 'id': 0, 'icon': WeatherIcons.cloud_refresh};
+      Map dataMap = {'name': city, 'temperature': '?', 'weather': '?', 'id': 0, 'icon': WeatherIcons.cloud_refresh,
+      'humidity' : '?', 'pressure': '?', 'wind speed': '?', 'feels_like': '?'};
       _weatherDataMaps.add(dataMap);
       bool isRealCity = await updateWeather(city);
       if(isRealCity) {
         city = dataMap['name'];
         _cityWidgets.add(CityTile(city));
         Map<String,List<Widget>> cityToWidgets = { city: [
-          SizedBox(height: 30,),
           Text("${dataMap['weather']}", style: informationTextStyle),
           SizedBox(height: 20,),
           Row(
@@ -154,10 +155,10 @@ class Data extends ChangeNotifier{
           }
         }
         setIcon(weatherDataMap['name']);
-        // for(String key in weatherDataMap.keys){
-        //   print("$key : $weatherDataMap[$key]");
-        //   break;
-        // }
+        for(String key in weatherDataMap.keys){
+          print("$key : $weatherDataMap[$key]");
+          break;
+        }
     }
     notifyListeners();
     return true;
@@ -204,19 +205,33 @@ class Data extends ChangeNotifier{
   }
 
   void addOption(String option){
-    options[option] = true;
-    for(Map map in _weatherDataMaps){
-      map[option] = '?';
+    //TODO: options are added but with no values
+    options[option.toLowerCase()] = true;
+    for(Map<String,List> map in _weatherScreenWidgets){
+      String cityName = map.keys.first;
+      Map cityWeatherData = cityWeather(cityName);
+      map[cityName].add(
+        SizedBox(height: 20,)
+      );
+      map[cityName].add(
+        Text("$option : ${cityWeatherData[option.toLowerCase()]}", style: informationTextStyle,)
+      );
     }
+    for(Map map in _weatherDataMaps){
+      updateWeather(map['name']);
+    }
+    // for(Map map in _weatherDataMaps){
+    //   map[option] = '?';
+    // }
   }
 
-  int optionsNumber(){
-    int i=3;
-    for(bool state in options.values){
-      if(state == true)
-        i++;
-    }
-    return i;
-  }
+  // int optionsNumber(){
+  //   int i=3;
+  //   for(bool state in options.values){
+  //     if(state == true)
+  //       i++;
+  //   }
+  //   return i;
+  // }
 
 }
