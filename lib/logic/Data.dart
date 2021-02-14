@@ -45,7 +45,6 @@ const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 
 class Data extends ChangeNotifier{
   List<CityTile> _cityWidgets = List<CityTile>();
   List<Map> _weatherDataMaps = List<Map>();
-  List<Map> _weatherScreenWidgets = List<Map<String,List>>();
 
   void addCity(String city) async{
     if(!cityExists(city) && city.isNotEmpty){
@@ -56,18 +55,6 @@ class Data extends ChangeNotifier{
       if(isRealCity) {
         city = dataMap['name'];
         _cityWidgets.add(CityTile(city));
-        Map<String,List<Widget>> cityToWidgets = { city: [
-          Text("${dataMap['weather']}", style: informationTextStyle),
-          SizedBox(height: 20,),
-          Row(
-            children: [
-              Text("${dataMap['temperature']}", style: informationTextStyle),
-              BoxedIcon(WeatherIcons.celsius, size: 33, color: Colors.white,),
-            ],
-          ),
-        ]
-        };
-        _weatherScreenWidgets.add(cityToWidgets);
       }
       notifyListeners();
     }
@@ -95,15 +82,6 @@ class Data extends ChangeNotifier{
 
   int cityNumbers(){
     return _cityWidgets.length;
-  }
-
-  int weatherScreenWidgetNumbers(String city){
-    for(Map map in _weatherScreenWidgets){
-      if(map.containsKey(city)){
-        return map[city].length;
-      }
-    }
-    return null;
   }
 
   Map cityWeather(String city){
@@ -181,15 +159,6 @@ class Data extends ChangeNotifier{
     return _cityWidgets;
   }
 
-  List weatherScreenWidgets(String city){
-    for(Map map in _weatherScreenWidgets){
-      if( map.containsKey(city) ){
-        return map[city];
-      }
-    }
-    return null;
-  }
-
   void setIcon(String city){
     Map weatherData = cityWeather(city);
     if ( weatherData['id'] == 800 ){
@@ -205,33 +174,31 @@ class Data extends ChangeNotifier{
   }
 
   void addOption(String option){
-    //TODO: options are added but with no values
     options[option.toLowerCase()] = true;
-    for(Map<String,List> map in _weatherScreenWidgets){
-      String cityName = map.keys.first;
-      Map cityWeatherData = cityWeather(cityName);
-      map[cityName].add(
-        SizedBox(height: 20,)
-      );
-      map[cityName].add(
-        Text("$option : ${cityWeatherData[option.toLowerCase()]}", style: informationTextStyle,)
-      );
-    }
     for(Map map in _weatherDataMaps){
       updateWeather(map['name']);
     }
-    // for(Map map in _weatherDataMaps){
-    //   map[option] = '?';
-    // }
+    notifyListeners();
   }
 
-  // int optionsNumber(){
-  //   int i=3;
-  //   for(bool state in options.values){
-  //     if(state == true)
-  //       i++;
-  //   }
-  //   return i;
-  // }
+  void removeOption(String option){
+    options[option.toLowerCase()] = false;
+    for(Map map in _weatherDataMaps){
+      updateWeather(map['name']);
+    }
+    notifyListeners();
+  }
 
+  bool isOptionSelected(String option){
+    // print("in isOptionSelected: ${options[option.toLowerCase()]}");
+    return options[option.toLowerCase()];
+  }
+
+  Color getOptionButtonColor(String option){
+    return isOptionSelected(option) ? Colors.blue : Colors.black;
+  }
+
+  get getOptions{
+    return options;
+  }
 }

@@ -15,10 +15,47 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
+  List<Widget> weatherScreenWidgets = List();
 
   @override
   void initState() {
     super.initState();
+    weatherScreenWidgets = [
+      Consumer<Data>(
+        builder: (context, data,child){
+          return Text(
+            "${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['weather']}",
+            style: informationTextStyle,
+          );
+        }
+      ),
+      SizedBox(height: 20,),
+      Row(
+        children: [
+          Consumer<Data>(
+            builder: (context, data, child){
+              return Text(
+                "${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['temperature']}",
+                style: informationTextStyle,
+              );
+            },
+          ),
+          BoxedIcon(
+            WeatherIcons.celsius,
+            size: 33,
+            color: Colors.white,
+          ),
+        ],
+      ),
+    ];
+    if ( Provider.of<Data>(context, listen: false).isOptionSelected("humidity") )
+      addOption("humidity");
+    if ( Provider.of<Data>(context, listen: false).isOptionSelected("feels_like") )
+      addOption("feels_like");
+    if ( Provider.of<Data>(context, listen: false).isOptionSelected("pressure") )
+      addOption("pressure");
+    if ( Provider.of<Data>(context, listen: false).isOptionSelected("wind speed") )
+      addOption("wind speed");
     Provider.of<Data>(context, listen: false).updateWeather(widget.city);
   }
 
@@ -52,7 +89,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     style: informationTextStyle.copyWith(fontSize: 33),
                   ),
               ),
-
+              SizedBox(height: 30,),
               Expanded(
                 flex: 6,
                 child: Padding(
@@ -62,8 +99,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           return ListView.builder(
                             shrinkWrap: true,
                             scrollDirection: Axis.vertical,
-                            itemCount: Provider.of<Data>(context).weatherScreenWidgetNumbers(widget.city),
-                            itemBuilder: (context, index) => Provider.of<Data>(context).weatherScreenWidgets(widget.city)[index],
+                            itemCount: weatherScreenWidgets.length,
+                            itemBuilder: (context, index) => weatherScreenWidgets[index],
                           );
                     },
                   ),
@@ -93,4 +130,23 @@ class _WeatherScreenState extends State<WeatherScreen> {
       ),
     );
   }
+
+  void addOption(String option){
+    if( Provider.of<Data>(context, listen: false).getOptions[option] == true) {
+      weatherScreenWidgets.add(SizedBox(height: 20,));
+      weatherScreenWidgets.add(
+        Consumer<Data>(
+          builder: (context, data, child) {
+            return Text(
+              "$option : ${Provider.of<Data>(context, listen: false)
+                  .cityWeather(widget.city)[option]}",
+              style: informationTextStyle,
+            );
+          },
+        ),
+      );
+    }
+    print("addOption in weatherScreen called with option $option");
+  }
+
 }

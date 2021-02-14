@@ -14,7 +14,7 @@ class Weather{
   Future<String> getCurrentWeather() async{
     _requestManager.clearResponseBody();
     String weatherData = await _requestManager.sendRequest();
-    print(weatherData.trim());
+    // print(weatherData.trim());
     return weatherData;
   }
 
