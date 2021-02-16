@@ -11,10 +11,7 @@ class CitiesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FlatButton(
-        color: Colors.green,
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OptionsScreen() )),
-      ),
+      bottomNavigationBar: NavigationBar(),
       backgroundColor: Colors.cyan,
       body: SafeArea(
         child: Padding(
@@ -54,5 +51,38 @@ class CitiesScreen extends StatelessWidget {
     );
   }
 
+}
+
+class NavigationBar extends StatefulWidget {
+  static int pageIndex = 0;
+
+  @override
+  _NavigationBarState createState() => _NavigationBarState();
+}
+
+class _NavigationBarState extends State<NavigationBar> {
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      backgroundColor: Colors.purple,
+      items: [
+        BottomNavigationBarItem(icon: Icon(Icons.location_city), label: "Cities"),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Options"),
+        ],
+      unselectedItemColor: Colors.blueAccent,
+      selectedItemColor: Colors.green,
+      currentIndex: NavigationBar.pageIndex,
+      showUnselectedLabels: false,
+      onTap: (index) {
+        NavigationBar.pageIndex = index;
+        if( NavigationBar.pageIndex == 1){
+          Navigator.push(context, MaterialPageRoute( builder: (context) => OptionsScreen()));
+        }
+        else{
+          Navigator.push(context, MaterialPageRoute( builder: (context) => CitiesScreen()));
+        }
+      }
+    );
+  }
 }
 

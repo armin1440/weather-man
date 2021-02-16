@@ -48,15 +48,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
         ],
       ),
     ];
-    if ( Provider.of<Data>(context, listen: false).isOptionSelected("humidity") )
-      addOption("humidity");
-    if ( Provider.of<Data>(context, listen: false).isOptionSelected("feels_like") )
-      addOption("feels_like");
-    if ( Provider.of<Data>(context, listen: false).isOptionSelected("pressure") )
-      addOption("pressure");
-    if ( Provider.of<Data>(context, listen: false).isOptionSelected("wind speed") )
-      addOption("wind speed");
+    initOption("humidity");
+    initOption("feels_like");
+    initOption("pressure");
+    initOption("wind speed");
     Provider.of<Data>(context, listen: false).updateWeather(widget.city);
+  }
+
+  void initOption(String option){
+    if ( Provider.of<Data>(context, listen: false).isOptionSelected(option) )
+      addOption(option);
   }
 
   @override
@@ -76,7 +77,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
                     child: Consumer<Data>(
                         builder: (context, data, child){
-                          return BoxedIcon(Provider.of<Data>(context).cityWeather(widget.city)['icon'], size: 180,);
+                          return BoxedIcon(Provider.of<Data>(context).cityWeather(widget.city)['icon'], size: 175,);
                         },
                     ),
                   )
@@ -132,21 +133,35 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   void addOption(String option){
+    Map optionToUnit = { 'humidity': '%', 'wind speed': 'km/h', 'feels_like': BoxedIcon(WeatherIcons.celsius,
+    size: 33, color: Colors.white,), 'pressure': 'hPa'};
     if( Provider.of<Data>(context, listen: false).getOptions[option] == true) {
       weatherScreenWidgets.add(SizedBox(height: 20,));
       weatherScreenWidgets.add(
         Consumer<Data>(
           builder: (context, data, child) {
+            if( option == 'feels_like') {
+              return Row(
+                  children: [Text(
+                    "${option.replaceAll("_", " ")} : ${Provider.of<Data>(context, listen: false)
+                        .cityWeather(widget.city)[option]}",
+                    style: informationTextStyle,
+                  ),
+                    optionToUnit[option],
+                  ]
+              );
+            }
+
             return Text(
               "$option : ${Provider.of<Data>(context, listen: false)
-                  .cityWeather(widget.city)[option]}",
+                  .cityWeather(widget.city)[option]} ${optionToUnit[option]}",
               style: informationTextStyle,
             );
           },
         ),
       );
     }
-    print("addOption in weatherScreen called with option $option");
+    // print("addOption in weatherScreen called with option $option");
   }
 
 }

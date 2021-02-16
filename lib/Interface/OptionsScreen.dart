@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:learner/logic/Data.dart';
 import 'package:provider/provider.dart';
+import 'CitiesScreen.dart';
 
 class OptionsScreen extends StatelessWidget {
 
@@ -16,6 +17,7 @@ class OptionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+          bottomNavigationBar: NavigationBar(),
           backgroundColor: Colors.white,
           body: Padding(
             padding: const EdgeInsets.only(top: 18.0, left: 10),
@@ -27,7 +29,7 @@ class OptionsScreen extends StatelessWidget {
                     Option("Humidity"),
                     Option("Wind speed"),
                     Option("Pressure"),
-                    Option("Feels_like"),
+                    Option("Feels like"),
                   ],
             ),
           ),
@@ -46,6 +48,7 @@ class Option extends StatelessWidget{
       leading: Text(title),
       trailing: Consumer<Data>(
         builder: (context, data, child){
+
           return RaisedButton(
             color: Provider.of<Data>(context, listen: false).getOptionButtonColor(title),
             onPressed: () {

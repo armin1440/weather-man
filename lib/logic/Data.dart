@@ -62,17 +62,18 @@ class Data extends ChangeNotifier{
 
   void removeCity(String city){
     if(cityExists(city)) {
+      print("here");
       for(Map weatherData in _weatherDataMaps){
         if(weatherData['city'] == city){
           _weatherDataMaps.remove(weatherData);
-          // print("$city weather removed from maps");
+          print("$city weather removed from maps");
           break;
         }
       }
       for (CityTile cityTile in _cityWidgets) {
         if (cityTile.city == city) {
           _cityWidgets.remove(cityTile);
-          // print("$city weather removed from widgets");
+          print("$city weather removed from widgets");
           break;
         }
       }
@@ -144,7 +145,7 @@ class Data extends ChangeNotifier{
 
   bool cityExists(String city){
     for(Map weatherData in _weatherDataMaps){
-      if(weatherData['city'] == city){
+      if(weatherData['name'] == city ){
         return true;
       }
     }
@@ -174,6 +175,7 @@ class Data extends ChangeNotifier{
   }
 
   void addOption(String option){
+    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
     options[option.toLowerCase()] = true;
     for(Map map in _weatherDataMaps){
       updateWeather(map['name']);
@@ -182,6 +184,7 @@ class Data extends ChangeNotifier{
   }
 
   void removeOption(String option){
+    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
     options[option.toLowerCase()] = false;
     for(Map map in _weatherDataMaps){
       updateWeather(map['name']);
@@ -190,11 +193,13 @@ class Data extends ChangeNotifier{
   }
 
   bool isOptionSelected(String option){
+    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
     // print("in isOptionSelected: ${options[option.toLowerCase()]}");
     return options[option.toLowerCase()];
   }
 
   Color getOptionButtonColor(String option){
+    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
     return isOptionSelected(option) ? Colors.blue : Colors.black;
   }
 

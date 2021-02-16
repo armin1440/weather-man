@@ -12,7 +12,6 @@ class CityTile extends StatelessWidget{
 
   @override
   Widget build(BuildContext context){
-    // Provider.of<Data>(context, listen: false).updateWeather(_city);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: ColorfulBox(
