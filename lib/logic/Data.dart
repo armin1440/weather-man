@@ -44,16 +44,54 @@ final Map options = { 'humidity' : false, 'pressure': false, 'feels_like': false
 const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
 class Data extends ChangeNotifier{
-  Position position;
+  Position location;
   List<CityTile> _cityWidgets = List<CityTile>();
   List<Map> _weatherDataMaps = List<Map>();
 
-  void getPosition() async{
-    position = await Geolocator.getCurrentPosition();
+  void getLocation() async{
+    location = await _determinePosition();
   }
 
-  void findWeatherByLocation(){
-    //TODO : this method
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permantly denied, we cannot request permissions.');
+    }
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return Future.error(
+            'Location permissions are denied (actual value: $permission).');
+      }
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
+  void findWeatherByLocation() async{
+    getLocation();
+    // print("lat : ${location.latitude} and long: ${location.longitude}");
+    Weather weather = Weather(city: null);
+    String weatherCast = "";
+    for(int i=0 ; i<5 ; i++){
+      weatherCast = await weather.getCurrentWeather(location: location);
+      if(weatherCast.isNotEmpty)
+        break;
+    }
+    print("weather cast : $weatherCast");
+    String cityName = jsonDecode(weatherCast)["name"];
+    addCity(cityName);
   }
 
   void addCity(String city) async{
@@ -105,7 +143,8 @@ class Data extends ChangeNotifier{
   }
 
   Future<bool> updateWeather(String city) async{
-    Map weatherDataMap = cityWeather(city);
+    Map weatherDataMap;
+    weatherDataMap = cityWeather(city);
     Weather cityWeatherData = Weather(city: city);
     String rawData = '';
     int i = 0;
@@ -125,9 +164,7 @@ class Data extends ChangeNotifier{
           List<String> sequence = jsonSequence.split(" ");
           if(sequence.length == 3) {
             weatherDataMap[key] =
-            jsonDecode(rawData)[sequence.elementAt(0)][int.parse(
-                sequence.elementAt(1))][sequence.elementAt(
-                2)]; //This is weather condition
+            jsonDecode(rawData)[sequence.elementAt(0)][int.parse(sequence.elementAt(1))][sequence.elementAt(2)]; //This is weather condition
             // print(weatherDataMap[key]);
           }else if(sequence.length == 2) {
             String temperature = jsonDecode(rawData)[sequence.elementAt(0)][sequence.elementAt(1)].toString(); //This is temperature

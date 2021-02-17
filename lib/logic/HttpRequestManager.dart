@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:geolocator/geolocator.dart';
+
 const String website = "https://api.openweathermap.org/data/2.5/weather?";
 const String appId = "83289b6399002df3cd5f3ff9263e52f2";
 //api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
@@ -18,9 +20,13 @@ class HttpRequestManager{
     responseBody = "";
   }
 
-  Future<String> sendRequest() async{
-    String url = website + "q=$_city&units=$units&appid=$appId";
-    // var httpRequest =
+  Future<String> sendRequest({Position location}) async{
+    String url;
+    if (_city != null || location == null)
+      url = website + "q=$_city&units=$units&appid=$appId";
+    else
+      url = website + 'lat=${location.latitude}&lon=${location.longitude}&appid=$appId';
+
     await _client.getUrl(Uri.parse(url))
         .then((HttpClientRequest request) {
           return request.close();
