@@ -18,16 +18,34 @@ class CitiesScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
           child: Column(
             children: <Widget>[
-              ColorfulBox(ListTile(
+              ColorfulBox(
+                ListTile(
                 title: TextField(
                   controller: _textEditingController,
                   style: TextStyle(fontSize: 20, color: Colors.white),),
-                trailing: FlatButton(
-                  child: Icon(Icons.add, size: 30, color: Colors.white,),
-                  onPressed: () {
-                      Provider.of<Data>(context, listen: false).addCity(_textEditingController.text);
-                      _textEditingController.clear();
-                  },
+                trailing: SizedBox(
+                  width: 100,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 50,
+                        child: FlatButton(
+                          child: Icon(Icons.add, size: 30, color: Colors.white,),
+                          onPressed: () {
+                              Provider.of<Data>(context, listen: false).addCity(_textEditingController.text);
+                              _textEditingController.clear();
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: 50,
+                        child: FlatButton(
+                            onPressed: () => Provider.of<Data>(context, listen: false).findWeatherByLocation(),
+                            child: Icon(Icons.location_on_outlined, size: 30, color: Colors.white,),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
                   ),

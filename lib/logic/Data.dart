@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:learner/Interface/CityTile.dart';
 import 'package:learner/logic/Weather.dart';
 import 'package:weather_icons/weather_icons.dart';
+import 'package:geolocator/geolocator.dart';
 
 const Map jsonNotation = {'name': 'name','temperature': 'main temp', 'weather' : 'weather 0 description', 'id' : 'weather 0 id',
   'humidity': 'main humidity', 'pressure': 'main pressure', 'wind speed': 'wind speed', "feels_like": 'main feels_like' };
@@ -43,8 +44,17 @@ final Map options = { 'humidity' : false, 'pressure': false, 'feels_like': false
 const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
 class Data extends ChangeNotifier{
+  Position position;
   List<CityTile> _cityWidgets = List<CityTile>();
   List<Map> _weatherDataMaps = List<Map>();
+
+  void getPosition() async{
+    position = await Geolocator.getCurrentPosition();
+  }
+
+  void findWeatherByLocation(){
+    //TODO : this method
+  }
 
   void addCity(String city) async{
     if(!cityExists(city) && city.isNotEmpty){
@@ -66,14 +76,14 @@ class Data extends ChangeNotifier{
       for(Map weatherData in _weatherDataMaps){
         if(weatherData['city'] == city){
           _weatherDataMaps.remove(weatherData);
-          print("$city weather removed from maps");
+          // print("$city weather removed from maps");
           break;
         }
       }
       for (CityTile cityTile in _cityWidgets) {
         if (cityTile.city == city) {
           _cityWidgets.remove(cityTile);
-          print("$city weather removed from widgets");
+          // print("$city weather removed from widgets");
           break;
         }
       }

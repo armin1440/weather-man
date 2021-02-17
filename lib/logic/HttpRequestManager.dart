@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-const String website = "https://api.openweathermap.org";
+const String website = "https://api.openweathermap.org/data/2.5/weather?";
 const String appId = "83289b6399002df3cd5f3ff9263e52f2";
+//api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
 const String units = "metric";
 
 //This class sends a request to OpenWeatherMap.org and returns its response
@@ -18,7 +19,7 @@ class HttpRequestManager{
   }
 
   Future<String> sendRequest() async{
-    String url = website + "/data/2.5/weather?q=$_city&units=$units&appid=$appId";
+    String url = website + "q=$_city&units=$units&appid=$appId";
     // var httpRequest =
     await _client.getUrl(Uri.parse(url))
         .then((HttpClientRequest request) {
