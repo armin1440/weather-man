@@ -79,8 +79,9 @@ class Data extends ChangeNotifier{
     return await Geolocator.getCurrentPosition();
   }
 
-  void findWeatherByLocation() async{
-    getLocation();
+  Future<bool> findWeatherByLocation() async{
+    for(int j=0; j<10; j++)
+      getLocation();
     // print("lat : ${location.latitude} and long: ${location.longitude}");
     Weather weather = Weather(city: null);
     String weatherCast = "";
@@ -89,9 +90,14 @@ class Data extends ChangeNotifier{
       if(weatherCast.isNotEmpty)
         break;
     }
-    print("weather cast : $weatherCast");
+    if(weatherCast.isEmpty || jsonDecode(weatherCast)['cod'] == '404') {
+      print("city not found");
+      return false;
+    }
+    // print("weather cast : $weatherCast");
     String cityName = jsonDecode(weatherCast)["name"];
     addCity(cityName);
+    return true;
   }
 
   void addCity(String city) async{

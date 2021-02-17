@@ -18,7 +18,7 @@ class _MyAppState extends State<MyApp> {
     return ChangeNotifierProvider(
       create: (context) => Data(),
       child: MaterialApp(
-          home: CitiesScreen()
+          home: LoadingScreen()
       ),
     );
   }

@@ -19,7 +19,7 @@ class Weather{
       weatherData = await _requestManager.sendRequest();
     else
       weatherData = await _requestManager.sendRequest(location: location);
-    print(weatherData.trim());
+    // print(weatherData.trim());
     return weatherData;
   }
 
