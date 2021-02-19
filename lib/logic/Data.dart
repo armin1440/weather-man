@@ -58,11 +58,13 @@ class Data extends ChangeNotifier{
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      print('Location services are disabled.');
       return Future.error('Location services are disabled.');
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.deniedForever) {
+      print('Location permissions are permantly denied, we cannot request permissions.');
       return Future.error(
           'Location permissions are permantly denied, we cannot request permissions.');
     }
@@ -71,22 +73,27 @@ class Data extends ChangeNotifier{
       permission = await Geolocator.requestPermission();
       if (permission != LocationPermission.whileInUse &&
           permission != LocationPermission.always) {
+        print( 'Location permissions are denied (actual value: $permission).');
         return Future.error(
             'Location permissions are denied (actual value: $permission).');
       }
     }
 
-    return await Geolocator.getCurrentPosition();
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
   }
 
   Future<bool> findWeatherByLocation() async{
     for(int j=0; j<10; j++)
       getLocation();
-    // print("lat : ${location.latitude} and long: ${location.longitude}");
+    if(location != null)
+      print("lat : ${location.latitude} and long: ${location.longitude}");
+    // else
+    //   print("Location is null");
     Weather weather = Weather(city: null);
     String weatherCast = "";
     for(int i=0 ; i<5 ; i++){
       weatherCast = await weather.getCurrentWeather(location: location);
+      // print("here");
       if(weatherCast.isNotEmpty)
         break;
     }
@@ -239,10 +246,14 @@ class Data extends ChangeNotifier{
   void removeOption(String option){
     option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
     options[option.toLowerCase()] = false;
+    updateAll();
+    notifyListeners();
+  }
+
+  void updateAll(){
     for(Map map in _weatherDataMaps){
       updateWeather(map['name']);
     }
-    notifyListeners();
   }
 
   bool isOptionSelected(String option){
@@ -253,7 +264,7 @@ class Data extends ChangeNotifier{
 
   Color getOptionButtonColor(String option){
     option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
-    return isOptionSelected(option) ? Colors.blue : Colors.black;
+    return isOptionSelected(option) ? Colors.indigo : Colors.black38;
   }
 
   get getOptions{

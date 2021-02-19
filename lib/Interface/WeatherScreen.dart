@@ -4,6 +4,7 @@ import 'package:learner/logic/Data.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_icons/weather_icons.dart';
 
+
 const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
 class WeatherScreen extends StatefulWidget {
@@ -30,22 +31,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
         }
       ),
       SizedBox(height: 20,),
-      Row(
-        children: [
-          Consumer<Data>(
-            builder: (context, data, child){
-              return Text(
-                "${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['temperature']}",
-                style: informationTextStyle,
-              );
-            },
-          ),
-          BoxedIcon(
-            WeatherIcons.celsius,
-            size: 33,
-            color: Colors.white,
-          ),
-        ],
+      Consumer<Data>(
+        builder: (context, data, child){
+          return  Text(
+            "${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['temperature']} \u2103",
+            style: informationTextStyle,
+          );
+        },
       ),
     ];
     initOption("humidity");
@@ -64,37 +56,42 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(backgroundColor: Colors.blueAccent, title: Text("Back"),),
-        backgroundColor: Colors.lightBlueAccent,
-        body: Container(
-          color: Colors.lightBlueAccent,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                  flex: 10,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
-                    child: Consumer<Data>(
-                        builder: (context, data, child){
-                          return BoxedIcon(Provider.of<Data>(context).cityWeather(widget.city)['icon'], size: 175,);
-                        },
-                    ),
-                  )
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              Center(
-                  child: Text("${widget.city}",
-                    style: informationTextStyle.copyWith(fontSize: 33),
-                  ),
-              ),
-              SizedBox(height: 30,),
-              Expanded(
-                flex: 6,
+        // appBar: AppBar(
+        //   backgroundColor: Colors.blueAccent,
+        //   title: Text("Back"),
+        // ),
+        backgroundColor: Colors.lightBlue,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+                flex: 10,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
+                  child: Consumer<Data>(
+                      builder: (context, data, child){
+                        return BoxedIcon(
+                          Provider.of<Data>(context).cityWeather(widget.city)['icon'],
+                          size: 160,
+                        );
+                      },
+                  ),
+                )
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            Center(
+              child: Text("${widget.city}",
+                style: informationTextStyle.copyWith(fontSize: 33),
+              ),
+            ),
+            SizedBox(height: 30,),
+            Expanded(
+              flex: 6,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: TransparentWhiteBox(
                   child: Consumer<Data>(
                     builder: (context, data, child){
                           return ListView.builder(
@@ -107,26 +104,26 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 40,
-              ),
-              Expanded(
-                flex: 1,
-                child: Center(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurple ),
-                    child: FlatButton(
-                      child: Text("update", style: informationTextStyle),
-                      onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
-                    ),
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            Expanded(
+              flex: 1,
+              child: Center(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurple ),
+                  child: FlatButton(
+                    child: Text("update", style: informationTextStyle),
+                    onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
                   ),
                 ),
               ),
-              SizedBox(
-                height: 50,
-              )
-            ],
-          ),
+            ),
+            SizedBox(
+              height: 50,
+            )
+          ],
         ),
       ),
     );
@@ -151,7 +148,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   ]
               );
             }
-
             return Text(
               "$option : ${Provider.of<Data>(context, listen: false)
                   .cityWeather(widget.city)[option]} ${optionToUnit[option]}",
@@ -164,4 +160,26 @@ class _WeatherScreenState extends State<WeatherScreen> {
     // print("addOption in weatherScreen called with option $option");
   }
 
+}
+
+class TransparentWhiteBox extends StatelessWidget {
+  const TransparentWhiteBox({
+    @required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Color(0x50DDDDDD),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: child,
+      )
+    );
+  }
 }

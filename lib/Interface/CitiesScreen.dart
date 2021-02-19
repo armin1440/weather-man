@@ -12,7 +12,7 @@ class CitiesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBar(),
-      backgroundColor: Colors.cyan,
+      backgroundColor: Colors.lightBlue,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
@@ -82,18 +82,19 @@ class _NavigationBarState extends State<NavigationBar> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: Colors.purple,
+      elevation: 16,
+      backgroundColor: Colors.blue.shade300,
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.location_city), label: "Cities"),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Options"),
         ],
-      unselectedItemColor: Colors.blueAccent,
-      selectedItemColor: Colors.green,
+      unselectedItemColor: Colors.indigo.shade300,
+      selectedItemColor: Colors.indigo.shade900,
       currentIndex: NavigationBar.pageIndex,
       showUnselectedLabels: false,
       onTap: (index) {
         NavigationBar.pageIndex = index;
-        if( NavigationBar.pageIndex == 1){
+        if( NavigationBar.pageIndex == 1 ){
           Navigator.push(context, MaterialPageRoute( builder: (context) => OptionsScreen()));
         }
         else{

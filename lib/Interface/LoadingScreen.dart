@@ -21,11 +21,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
   void initState() {
     super.initState();
     findWeatherOfHere();
-    sleep(Duration(seconds: 4));
   }
 
   void findWeatherOfHere() async{
     await Provider.of<Data>(context, listen: false).findWeatherByLocation();
+    // print("time to push");
     Navigator.push(context, MaterialPageRoute(builder: (context) => CitiesScreen()));
   }
 
