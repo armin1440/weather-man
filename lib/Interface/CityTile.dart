@@ -12,7 +12,6 @@ class CityTile extends StatelessWidget{
 
   @override
   Widget build(BuildContext context){
-    // Provider.of<Data>(context, listen: false).updateWeather(_city);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: ColorfulBox(
@@ -22,15 +21,15 @@ class CityTile extends StatelessWidget{
             child: ListTile(leading: Text(city, style: TextStyle(fontSize: 20, color: Colors.white),),
                 trailing: SizedBox(width: 80,
                   child: Row(children: <Widget>[
-                    Expanded(child: Text("${Provider.of<Data>(context).cityWeather(city)['temperature']}"), flex: 2,),
-                    Expanded(child: Padding(
-                      padding: EdgeInsets.only(top: 1),
-                      child: BoxedIcon(WeatherIcons.celsius),
-                      ),
-                      flex: 1,
+                    Expanded(
+                      child: Text("${Provider.of<Data>(context).cityWeather(city)['temperature']} \u2103"),
+                      flex: 4,
                     ),
                     // SizedBox(width: 20,),
-                    Expanded(child: BoxedIcon(Provider.of<Data>(context).cityWeather(city)['icon']), flex: 6,),
+                    Expanded(
+                      child: BoxedIcon(Provider.of<Data>(context).cityWeather(city)['icon']),
+                      flex: 6,
+                    ),
                   ],
                   ),
                 ),

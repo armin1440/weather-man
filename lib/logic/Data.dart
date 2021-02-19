@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:learner/Interface/CityTile.dart';
 import 'package:learner/logic/Weather.dart';
 import 'package:weather_icons/weather_icons.dart';
+import 'package:geolocator/geolocator.dart';
 
 const Map jsonNotation = {'name': 'name','temperature': 'main temp', 'weather' : 'weather 0 description', 'id' : 'weather 0 id',
   'humidity': 'main humidity', 'pressure': 'main pressure', 'wind speed': 'wind speed', "feels_like": 'main feels_like' };
@@ -43,9 +44,68 @@ final Map options = { 'humidity' : false, 'pressure': false, 'feels_like': false
 const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
 class Data extends ChangeNotifier{
+  Position location;
   List<CityTile> _cityWidgets = List<CityTile>();
   List<Map> _weatherDataMaps = List<Map>();
-  List<Map> _weatherScreenWidgets = List<Map<String,List>>();
+
+  void getLocation() async{
+    location = await _determinePosition();
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      print('Location services are disabled.');
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      print('Location permissions are permantly denied, we cannot request permissions.');
+      return Future.error(
+          'Location permissions are permantly denied, we cannot request permissions.');
+    }
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        print( 'Location permissions are denied (actual value: $permission).');
+        return Future.error(
+            'Location permissions are denied (actual value: $permission).');
+      }
+    }
+
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
+  }
+
+  Future<bool> findWeatherByLocation() async{
+    for(int j=0; j<10; j++)
+      getLocation();
+    if(location != null)
+      print("lat : ${location.latitude} and long: ${location.longitude}");
+    // else
+    //   print("Location is null");
+    Weather weather = Weather(city: null);
+    String weatherCast = "";
+    for(int i=0 ; i<5 ; i++){
+      weatherCast = await weather.getCurrentWeather(location: location);
+      // print("here");
+      if(weatherCast.isNotEmpty)
+        break;
+    }
+    if(weatherCast.isEmpty || jsonDecode(weatherCast)['cod'] == '404') {
+      print("city not found");
+      return false;
+    }
+    // print("weather cast : $weatherCast");
+    String cityName = jsonDecode(weatherCast)["name"];
+    addCity(cityName);
+    return true;
+  }
 
   void addCity(String city) async{
     if(!cityExists(city) && city.isNotEmpty){
@@ -56,18 +116,6 @@ class Data extends ChangeNotifier{
       if(isRealCity) {
         city = dataMap['name'];
         _cityWidgets.add(CityTile(city));
-        Map<String,List<Widget>> cityToWidgets = { city: [
-          Text("${dataMap['weather']}", style: informationTextStyle),
-          SizedBox(height: 20,),
-          Row(
-            children: [
-              Text("${dataMap['temperature']}", style: informationTextStyle),
-              BoxedIcon(WeatherIcons.celsius, size: 33, color: Colors.white,),
-            ],
-          ),
-        ]
-        };
-        _weatherScreenWidgets.add(cityToWidgets);
       }
       notifyListeners();
     }
@@ -75,6 +123,7 @@ class Data extends ChangeNotifier{
 
   void removeCity(String city){
     if(cityExists(city)) {
+      print("here");
       for(Map weatherData in _weatherDataMaps){
         if(weatherData['city'] == city){
           _weatherDataMaps.remove(weatherData);
@@ -97,15 +146,6 @@ class Data extends ChangeNotifier{
     return _cityWidgets.length;
   }
 
-  int weatherScreenWidgetNumbers(String city){
-    for(Map map in _weatherScreenWidgets){
-      if(map.containsKey(city)){
-        return map[city].length;
-      }
-    }
-    return null;
-  }
-
   Map cityWeather(String city){
     for(Map weatherData in _weatherDataMaps){
       if(weatherData['name'] == city){
@@ -116,7 +156,8 @@ class Data extends ChangeNotifier{
   }
 
   Future<bool> updateWeather(String city) async{
-    Map weatherDataMap = cityWeather(city);
+    Map weatherDataMap;
+    weatherDataMap = cityWeather(city);
     Weather cityWeatherData = Weather(city: city);
     String rawData = '';
     int i = 0;
@@ -136,9 +177,7 @@ class Data extends ChangeNotifier{
           List<String> sequence = jsonSequence.split(" ");
           if(sequence.length == 3) {
             weatherDataMap[key] =
-            jsonDecode(rawData)[sequence.elementAt(0)][int.parse(
-                sequence.elementAt(1))][sequence.elementAt(
-                2)]; //This is weather condition
+            jsonDecode(rawData)[sequence.elementAt(0)][int.parse(sequence.elementAt(1))][sequence.elementAt(2)]; //This is weather condition
             // print(weatherDataMap[key]);
           }else if(sequence.length == 2) {
             String temperature = jsonDecode(rawData)[sequence.elementAt(0)][sequence.elementAt(1)].toString(); //This is temperature
@@ -166,7 +205,7 @@ class Data extends ChangeNotifier{
 
   bool cityExists(String city){
     for(Map weatherData in _weatherDataMaps){
-      if(weatherData['city'] == city){
+      if(weatherData['name'] == city ){
         return true;
       }
     }
@@ -179,15 +218,6 @@ class Data extends ChangeNotifier{
 
   get cityWidget{
     return _cityWidgets;
-  }
-
-  List weatherScreenWidgets(String city){
-    for(Map map in _weatherScreenWidgets){
-      if( map.containsKey(city) ){
-        return map[city];
-      }
-    }
-    return null;
   }
 
   void setIcon(String city){
@@ -205,33 +235,39 @@ class Data extends ChangeNotifier{
   }
 
   void addOption(String option){
-    //TODO: options are added but with no values
+    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
     options[option.toLowerCase()] = true;
-    for(Map<String,List> map in _weatherScreenWidgets){
-      String cityName = map.keys.first;
-      Map cityWeatherData = cityWeather(cityName);
-      map[cityName].add(
-        SizedBox(height: 20,)
-      );
-      map[cityName].add(
-        Text("$option : ${cityWeatherData[option.toLowerCase()]}", style: informationTextStyle,)
-      );
-    }
     for(Map map in _weatherDataMaps){
       updateWeather(map['name']);
     }
-    // for(Map map in _weatherDataMaps){
-    //   map[option] = '?';
-    // }
+    notifyListeners();
   }
 
-  // int optionsNumber(){
-  //   int i=3;
-  //   for(bool state in options.values){
-  //     if(state == true)
-  //       i++;
-  //   }
-  //   return i;
-  // }
+  void removeOption(String option){
+    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
+    options[option.toLowerCase()] = false;
+    updateAll();
+    notifyListeners();
+  }
 
+  void updateAll(){
+    for(Map map in _weatherDataMaps){
+      updateWeather(map['name']);
+    }
+  }
+
+  bool isOptionSelected(String option){
+    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
+    // print("in isOptionSelected: ${options[option.toLowerCase()]}");
+    return options[option.toLowerCase()];
+  }
+
+  Color getOptionButtonColor(String option){
+    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
+    return isOptionSelected(option) ? Colors.indigo : Colors.black38;
+  }
+
+  get getOptions{
+    return options;
+  }
 }

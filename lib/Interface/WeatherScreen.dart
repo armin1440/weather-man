@@ -4,7 +4,8 @@ import 'package:learner/logic/Data.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_icons/weather_icons.dart';
 
-const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
+
+const TextStyle informationTextStyle = TextStyle(color: Colors.black, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
 class WeatherScreen extends StatefulWidget {
   final String city;
@@ -15,82 +16,164 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
+  List<Widget> weatherScreenWidgets = List();
 
   @override
   void initState() {
     super.initState();
+    weatherScreenWidgets = [
+      Consumer<Data>(
+        builder: (context, data,child){
+          return Text(
+            "${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['weather']}",
+            style: informationTextStyle,
+          );
+        }
+      ),
+      SizedBox(height: 20,),
+      Consumer<Data>(
+        builder: (context, data, child){
+          return  Text(
+            "${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['temperature']} \u2103",
+            style: informationTextStyle,
+          );
+        },
+      ),
+    ];
+    initOption("humidity");
+    initOption("feels_like");
+    initOption("pressure");
+    initOption("wind speed");
     Provider.of<Data>(context, listen: false).updateWeather(widget.city);
+  }
+
+  void initOption(String option){
+    if ( Provider.of<Data>(context, listen: false).isOptionSelected(option) )
+      addOption(option);
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(backgroundColor: Colors.blueAccent, title: Text("Back"),),
-        backgroundColor: Colors.lightBlueAccent,
+        // appBar: AppBar(
+        //   backgroundColor: Colors.blueAccent,
+        //   title: Text("Back"),
+        // ),
+        backgroundColor: Colors.lightBlue,
         body: Container(
-          color: Colors.lightBlueAccent,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                  flex: 10,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
-                    child: Consumer<Data>(
-                        builder: (context, data, child){
-                          return BoxedIcon(Provider.of<Data>(context).cityWeather(widget.city)['icon'], size: 180,);
-                        },
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/thunderstorm.jpg'),
+              fit: BoxFit.cover,
+            )
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                // Expanded(
+                //     flex: 10,
+                //     child: Padding(
+                //       padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
+                //       child: Consumer<Data>(
+                //           builder: (context, data, child){
+                //             return BoxedIcon(
+                //               Provider.of<Data>(context).cityWeather(widget.city)['icon'],
+                //               size: 160,
+                //             );
+                //           },
+                //       ),
+                //     )
+                // ),
+                SizedBox(
+                  height: 50,
+                ),
+                TransparentWhiteBox(
+                  child: Center(
+                    child: Text("${widget.city}",
+                      style: informationTextStyle.copyWith(fontSize: 33),
                     ),
-                  )
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              Center(
-                  child: Text("${widget.city}",
-                    style: informationTextStyle.copyWith(fontSize: 33),
                   ),
-              ),
-
-              Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                ),
+                SizedBox(height: 30,),
+                TransparentWhiteBox(
                   child: Consumer<Data>(
                     builder: (context, data, child){
                           return ListView.builder(
                             shrinkWrap: true,
                             scrollDirection: Axis.vertical,
-                            itemCount: Provider.of<Data>(context).weatherScreenWidgetNumbers(widget.city),
-                            itemBuilder: (context, index) => Provider.of<Data>(context).weatherScreenWidgets(widget.city)[index],
+                            itemCount: weatherScreenWidgets.length,
+                            itemBuilder: (context, index) => weatherScreenWidgets[index],
                           );
                     },
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              Expanded(
-                flex: 1,
-                child: Center(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurple ),
-                    child: FlatButton(
-                      child: Text("update", style: informationTextStyle),
-                      onPressed: () => Provider.of<Data>(context).updateWeather(widget.city),
+             SizedBox(
+                  height: 40,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Center(
+                    child: TransparentWhiteBox(
+                      child: FlatButton(
+                        child: Text("update", style: informationTextStyle),
+                        onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 50,
-              )
-            ],
+                SizedBox(
+                  height: 50,
+                )
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  void addOption(String option){
+    Map optionToUnit = { 'humidity': '%', 'wind speed': 'km/h', 'feels_like': '\u2103', 'pressure': 'hPa'};
+    if( Provider.of<Data>(context, listen: false).getOptions[option] == true) {
+      weatherScreenWidgets.add(SizedBox(height: 20,));
+      weatherScreenWidgets.add(
+        Consumer<Data>(
+          builder: (context, data, child) {
+            return Text(
+              "${option.replaceAll("_", " ")} : ${Provider.of<Data>(context, listen: false)
+                  .cityWeather(widget.city)[option]} ${optionToUnit[option]}",
+              style: informationTextStyle,
+            );
+          },
+        ),
+      );
+    }
+    // print("addOption in weatherScreen called with option $option");
+  }
+
+}
+
+class TransparentWhiteBox extends StatelessWidget {
+  const TransparentWhiteBox({
+    @required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Color(0x6CDDDDDD),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: child,
+      )
     );
   }
 }

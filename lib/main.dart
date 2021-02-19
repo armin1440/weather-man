@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:learner/Interface/CitiesScreen.dart';
 import 'package:learner/Interface/LoadingScreen.dart';
 import 'package:learner/logic/Data.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +17,7 @@ class _MyAppState extends State<MyApp> {
     return ChangeNotifierProvider(
       create: (context) => Data(),
       child: MaterialApp(
-          home: CitiesScreen()
+          home: LoadingScreen()
       ),
     );
   }

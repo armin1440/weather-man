@@ -11,26 +11,41 @@ class CitiesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FlatButton(
-        color: Colors.green,
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OptionsScreen() )),
-      ),
-      backgroundColor: Colors.cyan,
+      bottomNavigationBar: NavigationBar(),
+      backgroundColor: Colors.lightBlue,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
           child: Column(
             children: <Widget>[
-              ColorfulBox(ListTile(
+              ColorfulBox(
+                ListTile(
                 title: TextField(
                   controller: _textEditingController,
                   style: TextStyle(fontSize: 20, color: Colors.white),),
-                trailing: FlatButton(
-                  child: Icon(Icons.add, size: 30, color: Colors.white,),
-                  onPressed: () {
-                      Provider.of<Data>(context, listen: false).addCity(_textEditingController.text);
-                      _textEditingController.clear();
-                  },
+                trailing: SizedBox(
+                  width: 100,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 50,
+                        child: FlatButton(
+                          child: Icon(Icons.add, size: 30, color: Colors.white,),
+                          onPressed: () {
+                              Provider.of<Data>(context, listen: false).addCity(_textEditingController.text);
+                              _textEditingController.clear();
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: 50,
+                        child: FlatButton(
+                            onPressed: () => Provider.of<Data>(context, listen: false).findWeatherByLocation(),
+                            child: Icon(Icons.location_on_outlined, size: 30, color: Colors.white,),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
                   ),
@@ -54,5 +69,39 @@ class CitiesScreen extends StatelessWidget {
     );
   }
 
+}
+
+class NavigationBar extends StatefulWidget {
+  static int pageIndex = 0;
+
+  @override
+  _NavigationBarState createState() => _NavigationBarState();
+}
+
+class _NavigationBarState extends State<NavigationBar> {
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      elevation: 16,
+      backgroundColor: Colors.blue.shade300,
+      items: [
+        BottomNavigationBarItem(icon: Icon(Icons.location_city), label: "Cities"),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Options"),
+        ],
+      unselectedItemColor: Colors.indigo.shade300,
+      selectedItemColor: Colors.indigo.shade900,
+      currentIndex: NavigationBar.pageIndex,
+      showUnselectedLabels: false,
+      onTap: (index) {
+        NavigationBar.pageIndex = index;
+        if( NavigationBar.pageIndex == 1 ){
+          Navigator.push(context, MaterialPageRoute( builder: (context) => OptionsScreen()));
+        }
+        else{
+          Navigator.push(context, MaterialPageRoute( builder: (context) => CitiesScreen()));
+        }
+      }
+    );
+  }
 }
 
