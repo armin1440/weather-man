@@ -79,7 +79,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurple ),
                     child: FlatButton(
                       child: Text("update", style: informationTextStyle),
-                      onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
+                      onPressed: () => Provider.of<Data>(context).updateWeather(widget.city),
                     ),
                   ),
                 ),
