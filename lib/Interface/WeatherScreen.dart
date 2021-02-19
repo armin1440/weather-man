@@ -17,10 +17,12 @@ class WeatherScreen extends StatefulWidget {
 
 class _WeatherScreenState extends State<WeatherScreen> {
   List<Widget> weatherScreenWidgets = List();
+  String image = '';
 
   @override
   void initState() {
     super.initState();
+    image = Provider.of<Data>(context, listen: false).getWeatherScreenPicture(widget.city);
     weatherScreenWidgets = [
       Consumer<Data>(
         builder: (context, data,child){
@@ -56,37 +58,20 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Colors.blueAccent,
-        //   title: Text("Back"),
-        // ),
         backgroundColor: Colors.lightBlue,
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('images/thunderstorm.jpg'),
+              image: AssetImage('images/$image'),
               fit: BoxFit.cover,
             )
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                // Expanded(
-                //     flex: 10,
-                //     child: Padding(
-                //       padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
-                //       child: Consumer<Data>(
-                //           builder: (context, data, child){
-                //             return BoxedIcon(
-                //               Provider.of<Data>(context).cityWeather(widget.city)['icon'],
-                //               size: 160,
-                //             );
-                //           },
-                //       ),
-                //     )
-                // ),
                 SizedBox(
                   height: 50,
                 ),
@@ -98,34 +83,33 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   ),
                 ),
                 SizedBox(height: 30,),
-                TransparentWhiteBox(
-                  child: Consumer<Data>(
-                    builder: (context, data, child){
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            itemCount: weatherScreenWidgets.length,
-                            itemBuilder: (context, index) => weatherScreenWidgets[index],
-                          );
-                    },
+                Expanded(
+                  child: TransparentWhiteBox(
+                    child: Consumer<Data>(
+                      builder: (context, data, child){
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemCount: weatherScreenWidgets.length,
+                              itemBuilder: (context, index) => weatherScreenWidgets[index],
+                            );
+                      },
+                    ),
                   ),
                 ),
              SizedBox(
                   height: 40,
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Center(
-                    child: TransparentWhiteBox(
-                      child: FlatButton(
-                        child: Text("update", style: informationTextStyle),
-                        onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
-                      ),
+                Center(
+                  child: TransparentWhiteBox(
+                    child: FlatButton(
+                      child: Text("update", style: informationTextStyle),
+                      onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: 50,
+                  height: 20,
                 )
               ],
             ),
@@ -167,7 +151,7 @@ class TransparentWhiteBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Color(0x6CDDDDDD),
+        color: Color(0x4CDDDDDD),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(

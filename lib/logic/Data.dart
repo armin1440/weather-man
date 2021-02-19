@@ -40,6 +40,37 @@ const Map weatherIdToIcon = {
   221: WeatherIcons.thunderstorm, 230: WeatherIcons.thunderstorm,
   231: WeatherIcons.thunderstorm, 232: WeatherIcons.thunderstorm,
 };
+const Map codeToPicture = {
+  800: ['sunny.jpg', 'night.jpg'] ,
+  801: 'cloud.jpg', 802: 'cloud.jpg',
+  803: 'cloud.jpg', 804: 'cloud.jpg',
+  701: 'fog.jpg', 711: 'smoke.png',
+  721: 'fog.jpg', 731: 'dust.jpg',
+  741: 'fog.jpg', 751: 'sandStorm.jpg',
+  761: 'dust.jpg', 762: 'volcano.jpg',
+  771: 'rain.jpf', 781: 'tornado.png',
+  600: 'snow.jpg',
+  601: 'snow.jpg', 602: 'snow.jpg',
+  611: 'snow.jpg', 612: 'snow.jpg',
+  613: 'snow.jpg', 615: 'snow.jpg',
+  616: 'snow.jpg', 620: 'snow.jpg',
+  621: 'snow.jpg', 622: 'snow.jpg',
+  500: 'rain.jpg', 501: 'rain.jpg',
+  502: 'shower.jpg', 503: 'shower.jpg',
+  504: 'shower.jpg', 511: 'rain.jpg',
+  520: 'rain.jpg', 521: 'shower.jpg',
+  522: 'shower.jpg', 531: 'shower.jpg',
+  300: 'drizzle.jpg', 301: 'drizzle.jpg',
+  302: 'drizzle.jpg', 310: 'rain.jpg',
+  311: 'rain.jpg', 312: 'rain.jpg',
+  313: 'shower.jpg', 314: 'shower.jpg',
+  321: 'shower.jpg',
+  200: 'thunderstorm.jpg', 201: 'thunderstorm.jpg',
+  202: 'thunderstorm.jpg', 210: 'thunderstorm.jpg',
+  211: 'thunderstorm.jpg', 212: 'thunderstorm.jpg',
+  221: 'thunderstorm.jpg', 230: 'thunderstorm.jpg',
+  231: 'thunderstorm.jpg', 232: 'thunderstorm.jpg',
+};
 final Map options = { 'humidity' : false, 'pressure': false, 'feels_like': false, 'wind speed': false};
 const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
@@ -79,7 +110,7 @@ class Data extends ChangeNotifier{
       }
     }
 
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
+    return await Geolocator.getCurrentPosition();
   }
 
   Future<bool> findWeatherByLocation() async{
@@ -87,8 +118,8 @@ class Data extends ChangeNotifier{
       getLocation();
     if(location != null)
       print("lat : ${location.latitude} and long: ${location.longitude}");
-    // else
-    //   print("Location is null");
+    else
+      print("Location is null");
     Weather weather = Weather(city: null);
     String weatherCast = "";
     for(int i=0 ; i<5 ; i++){
@@ -123,7 +154,6 @@ class Data extends ChangeNotifier{
 
   void removeCity(String city){
     if(cityExists(city)) {
-      print("here");
       for(Map weatherData in _weatherDataMaps){
         if(weatherData['city'] == city){
           _weatherDataMaps.remove(weatherData);
@@ -194,10 +224,10 @@ class Data extends ChangeNotifier{
           }
         }
         setIcon(weatherDataMap['name']);
-        for(String key in weatherDataMap.keys){
-          print("$key : $weatherDataMap[$key]");
-          break;
-        }
+        // for(String key in weatherDataMap.keys){
+        //   print("$key : $weatherDataMap[$key]");
+        //   break;
+        // }
     }
     notifyListeners();
     return true;
@@ -269,5 +299,20 @@ class Data extends ChangeNotifier{
 
   get getOptions{
     return options;
+  }
+
+  String getWeatherScreenPicture(String city){
+    Map weatherData = cityWeather(city);
+    int code = weatherData['id'];
+    // print('code is $code');
+    if(code == 800){
+      var now = new DateTime.now();
+      List clearSky = codeToPicture[800];
+      if( now.hour> 18 ) {
+        return clearSky[1];
+      }else
+        return clearSky[0];
+    }
+    return codeToPicture[code];
   }
 }
