@@ -50,9 +50,10 @@ class Option extends StatelessWidget{
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 5),
+
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Color(0x50DDDDDD),
+          color: Color(0x9cDDDDDD),
           borderRadius: BorderRadius.circular(12),
         ),
         child: ListTile(

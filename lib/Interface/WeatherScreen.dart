@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 
-const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
+const TextStyle informationTextStyle = TextStyle(color: Colors.black, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
 class WeatherScreen extends StatefulWidget {
   final String city;
@@ -61,37 +61,44 @@ class _WeatherScreenState extends State<WeatherScreen> {
         //   title: Text("Back"),
         // ),
         backgroundColor: Colors.lightBlue,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Expanded(
-                flex: 10,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
-                  child: Consumer<Data>(
-                      builder: (context, data, child){
-                        return BoxedIcon(
-                          Provider.of<Data>(context).cityWeather(widget.city)['icon'],
-                          size: 160,
-                        );
-                      },
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/thunderstorm.jpg'),
+              fit: BoxFit.cover,
+            )
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                // Expanded(
+                //     flex: 10,
+                //     child: Padding(
+                //       padding: const EdgeInsets.fromLTRB(20, 45, 20, 0),
+                //       child: Consumer<Data>(
+                //           builder: (context, data, child){
+                //             return BoxedIcon(
+                //               Provider.of<Data>(context).cityWeather(widget.city)['icon'],
+                //               size: 160,
+                //             );
+                //           },
+                //       ),
+                //     )
+                // ),
+                SizedBox(
+                  height: 50,
+                ),
+                TransparentWhiteBox(
+                  child: Center(
+                    child: Text("${widget.city}",
+                      style: informationTextStyle.copyWith(fontSize: 33),
+                    ),
                   ),
-                )
-            ),
-            SizedBox(
-              height: 50,
-            ),
-            Center(
-              child: Text("${widget.city}",
-                style: informationTextStyle.copyWith(fontSize: 33),
-              ),
-            ),
-            SizedBox(height: 30,),
-            Expanded(
-              flex: 6,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: TransparentWhiteBox(
+                ),
+                SizedBox(height: 30,),
+                TransparentWhiteBox(
                   child: Consumer<Data>(
                     builder: (context, data, child){
                           return ListView.builder(
@@ -103,53 +110,40 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     },
                   ),
                 ),
-              ),
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            Expanded(
-              flex: 1,
-              child: Center(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurple ),
-                  child: FlatButton(
-                    child: Text("update", style: informationTextStyle),
-                    onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
+                SizedBox(
+                  height: 40,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Center(
+                    child: TransparentWhiteBox(
+                      child: FlatButton(
+                        child: Text("update", style: informationTextStyle),
+                        onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                SizedBox(
+                  height: 50,
+                )
+              ],
             ),
-            SizedBox(
-              height: 50,
-            )
-          ],
+          ),
         ),
       ),
     );
   }
 
   void addOption(String option){
-    Map optionToUnit = { 'humidity': '%', 'wind speed': 'km/h', 'feels_like': BoxedIcon(WeatherIcons.celsius,
-    size: 33, color: Colors.white,), 'pressure': 'hPa'};
+    Map optionToUnit = { 'humidity': '%', 'wind speed': 'km/h', 'feels_like': '\u2103', 'pressure': 'hPa'};
     if( Provider.of<Data>(context, listen: false).getOptions[option] == true) {
       weatherScreenWidgets.add(SizedBox(height: 20,));
       weatherScreenWidgets.add(
         Consumer<Data>(
           builder: (context, data, child) {
-            if( option == 'feels_like') {
-              return Row(
-                  children: [Text(
-                    "${option.replaceAll("_", " ")} : ${Provider.of<Data>(context, listen: false)
-                        .cityWeather(widget.city)[option]}",
-                    style: informationTextStyle,
-                  ),
-                    optionToUnit[option],
-                  ]
-              );
-            }
             return Text(
-              "$option : ${Provider.of<Data>(context, listen: false)
+              "${option.replaceAll("_", " ")} : ${Provider.of<Data>(context, listen: false)
                   .cityWeather(widget.city)[option]} ${optionToUnit[option]}",
               style: informationTextStyle,
             );
@@ -173,7 +167,7 @@ class TransparentWhiteBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Color(0x50DDDDDD),
+        color: Color(0x6CDDDDDD),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
