@@ -61,6 +61,7 @@ class Option extends StatelessWidget{
           trailing: Consumer<Data>(
             builder: (context, data, child){
               return FlatButton(
+                child: SizedBox(), // Only to prevent warning
                 shape: CircleBorder(),
                 color: Provider.of<Data>(context, listen: false).getOptionButtonColor(title),
                 onPressed: () {
