@@ -61,9 +61,7 @@ class Option extends StatelessWidget{
           trailing: Consumer<Data>(
             builder: (context, data, child){
               return FlatButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                ),
+                shape: CircleBorder(),
                 color: Provider.of<Data>(context, listen: false).getOptionButtonColor(title),
                 onPressed: () {
                   if ( !Provider.of<Data>(context, listen: false).isOptionSelected(title) )
