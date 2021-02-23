@@ -26,7 +26,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
   void findWeatherOfHere() async{
     await Provider.of<Data>(context, listen: false).findWeatherByLocation();
     // print("time to push");
-    Navigator.push(context, MaterialPageRoute(builder: (context) => CitiesScreen()));
+    // Navigator.push(context, MaterialPageRoute(builder: (context) => CitiesScreen()));
+    Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (BuildContext context) => CitiesScreen()));
   }
 
   @override

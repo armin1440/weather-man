@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:learner/logic/Data.dart';
 import 'package:provider/provider.dart';
-import 'package:weather_icons/weather_icons.dart';
-
 
 const TextStyle informationTextStyle = TextStyle(color: Colors.black, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 

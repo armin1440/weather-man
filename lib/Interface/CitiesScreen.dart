@@ -95,10 +95,12 @@ class _NavigationBarState extends State<NavigationBar> {
       onTap: (index) {
         NavigationBar.pageIndex = index;
         if( NavigationBar.pageIndex == 1 ){
-          Navigator.push(context, MaterialPageRoute( builder: (context) => OptionsScreen()));
+          // Navigator.push(context, MaterialPageRoute( builder: (context) => OptionsScreen()));
+          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => OptionsScreen()));
         }
         else{
-          Navigator.push(context, MaterialPageRoute( builder: (context) => CitiesScreen()));
+          // Navigator.push(context, MaterialPageRoute( builder: (context) => CitiesScreen()));
+          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => CitiesScreen()));
         }
       }
     );

@@ -201,7 +201,7 @@ class Data extends ChangeNotifier{
     }
     else if (rawData.isNotEmpty) {
         for (String key in weatherDataMap.keys) {
-          if(!jsonNotation.containsKey(key) || (options.containsKey(key) && options[key] == false))
+          if(!jsonNotation.containsKey(key) )
             continue;
           String jsonSequence = jsonNotation[key];
           List<String> sequence = jsonSequence.split(" ");
@@ -224,10 +224,10 @@ class Data extends ChangeNotifier{
           }
         }
         setIcon(weatherDataMap['name']);
-        // for(String key in weatherDataMap.keys){
-        //   print("$key : $weatherDataMap[$key]");
-        //   break;
-        // }
+        for(String key in weatherDataMap.keys){
+          print("$key : $weatherDataMap[$key]");
+          break;
+        }
     }
     notifyListeners();
     return true;
@@ -267,9 +267,9 @@ class Data extends ChangeNotifier{
   void addOption(String option){
     option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
     options[option.toLowerCase()] = true;
-    for(Map map in _weatherDataMaps){
-      updateWeather(map['name']);
-    }
+    // for(Map map in _weatherDataMaps){
+    //   updateWeather(map['name']);
+    // }
     notifyListeners();
   }
 
