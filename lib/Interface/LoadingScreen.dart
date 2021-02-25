@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:learner/Interface/CitiesScreen.dart';
-import 'package:learner/logic/Data.dart';
+import 'package:learner/logic/DataManager.dart';
 import 'package:provider/provider.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -22,9 +22,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void findWeatherOfHere() async{
-    await Provider.of<Data>(context, listen: false).findWeatherByLocation();
-    // print("time to push");
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => CitiesScreen()));
+    await Provider.of<DataManager>(context, listen: false).findWeatherByLocation();
     Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (BuildContext context) => CitiesScreen()));
   }
 

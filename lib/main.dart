@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learner/Interface/LoadingScreen.dart';
-import 'package:learner/logic/Data.dart';
+import 'package:learner/logic/DataManager.dart';
 import 'package:provider/provider.dart';
 main(){
   runApp(MyApp());
@@ -15,7 +15,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => Data(),
+      create: (context) => DataManager(),
       child: MaterialApp(
           home: LoadingScreen()
       ),

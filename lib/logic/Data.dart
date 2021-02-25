@@ -1,89 +1,13 @@
-import 'dart:convert';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:learner/Interface/CityTile.dart';
 import 'package:learner/logic/Weather.dart';
-import 'package:weather_icons/weather_icons.dart';
-import 'package:geolocator/geolocator.dart';
 
-const Map jsonNotation = {'name': 'name','temperature': 'main temp', 'weather' : 'weather 0 description', 'id' : 'weather 0 id',
-  'humidity': 'main humidity', 'pressure': 'main pressure', 'wind speed': 'wind speed', "feels_like": 'main feels_like' };
-const Map weatherIdToIcon = {
-  0: WeatherIcons.cloud_refresh,
-  800: [WeatherIcons.day_sunny, WeatherIcons.night_clear] ,
-  801: WeatherIcons.cloudy, 802: WeatherIcons.cloudy,
-  803: WeatherIcons.cloudy, 804: WeatherIcons.cloudy,
-  701: WeatherIcons.fog, 711: WeatherIcons.smoke,
-  721: WeatherIcons.fog, 731: WeatherIcons.dust,
-  741: WeatherIcons.fog, 751: WeatherIcons.sandstorm,
-  761: WeatherIcons.dust, 762: WeatherIcons.volcano,
-  771: WeatherIcons.rain_wind, 781: WeatherIcons.tornado,
-  600: WeatherIcons.snow,
-  601: WeatherIcons.snow, 602: WeatherIcons.snow,
-  611: WeatherIcons.snow, 612: WeatherIcons.snow,
-  613: WeatherIcons.snow, 615: WeatherIcons.rain_mix,
-  616: WeatherIcons.snow, 620: WeatherIcons.snow,
-  621: WeatherIcons.snow, 622: WeatherIcons.snow,
-  500: WeatherIcons.rain, 501: WeatherIcons.rain,
-  502: WeatherIcons.showers, 503: WeatherIcons.showers,
-  504: WeatherIcons.showers, 511: WeatherIcons.rain,
-  520: WeatherIcons.rain, 521: WeatherIcons.showers,
-  522: WeatherIcons.showers, 531: WeatherIcons.showers,
-  300: WeatherIcons.raindrop, 301: WeatherIcons.raindrop,
-  302: WeatherIcons.raindrops, 310: WeatherIcons.rain,
-  311: WeatherIcons.rain, 312: WeatherIcons.rain,
-  313: WeatherIcons.showers, 314: WeatherIcons.showers,
-  321: WeatherIcons.showers,
-  200: WeatherIcons.thunderstorm, 201: WeatherIcons.thunderstorm,
-  202: WeatherIcons.thunderstorm, 210: WeatherIcons.thunderstorm,
-  211: WeatherIcons.thunderstorm, 212: WeatherIcons.thunderstorm,
-  221: WeatherIcons.thunderstorm, 230: WeatherIcons.thunderstorm,
-  231: WeatherIcons.thunderstorm, 232: WeatherIcons.thunderstorm,
-};
-const Map codeToPicture = {
-  800: ['sunny.jpg', 'night.jpg'] ,
-  801: 'cloud.jpg', 802: 'cloud.jpg',
-  803: 'cloud.jpg', 804: 'cloud.jpg',
-  701: 'fog.jpg', 711: 'smoke.png',
-  721: 'fog.jpg', 731: 'dust.jpg',
-  741: 'fog.jpg', 751: 'sandStorm.jpg',
-  761: 'dust.jpg', 762: 'volcano.jpg',
-  771: 'rain.jpf', 781: 'tornado.png',
-  600: 'snow.jpg',
-  601: 'snow.jpg', 602: 'snow.jpg',
-  611: 'snow.jpg', 612: 'snow.jpg',
-  613: 'snow.jpg', 615: 'snow.jpg',
-  616: 'snow.jpg', 620: 'snow.jpg',
-  621: 'snow.jpg', 622: 'snow.jpg',
-  500: 'rain.jpg', 501: 'rain.jpg',
-  502: 'shower.jpg', 503: 'shower.jpg',
-  504: 'shower.jpg', 511: 'rain.jpg',
-  520: 'rain.jpg', 521: 'shower.jpg',
-  522: 'shower.jpg', 531: 'shower.jpg',
-  300: 'drizzle.jpg', 301: 'drizzle.jpg',
-  302: 'drizzle.jpg', 310: 'rain.jpg',
-  311: 'rain.jpg', 312: 'rain.jpg',
-  313: 'shower.jpg', 314: 'shower.jpg',
-  321: 'shower.jpg',
-  200: 'thunderstorm.jpg', 201: 'thunderstorm.jpg',
-  202: 'thunderstorm.jpg', 210: 'thunderstorm.jpg',
-  211: 'thunderstorm.jpg', 212: 'thunderstorm.jpg',
-  221: 'thunderstorm.jpg', 230: 'thunderstorm.jpg',
-  231: 'thunderstorm.jpg', 232: 'thunderstorm.jpg',
-};
-final Map options = { 'humidity' : false, 'pressure': false, 'feels_like': false, 'wind speed': false};
-const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
-
-class Data extends ChangeNotifier{
-  Position location;
+class Data{
+  Position _location;
   List<CityTile> _cityWidgets = List<CityTile>();
-  List<Map> _weatherDataMaps = List<Map>();
+  List<Weather> _weatherDatas = List<Weather>();
 
-  void getLocation() async{
-    location = await _determinePosition();
-  }
-
-  Future<Position> _determinePosition() async {
+  Future<Position> getLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -95,9 +19,9 @@ class Data extends ChangeNotifier{
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.deniedForever) {
-      print('Location permissions are permantly denied, we cannot request permissions.');
+      print('Location permissions are permanently denied, we cannot request permissions.');
       return Future.error(
-          'Location permissions are permantly denied, we cannot request permissions.');
+          'Location permissions are permanently denied, we cannot request permissions.');
     }
 
     if (permission == LocationPermission.denied) {
@@ -110,209 +34,76 @@ class Data extends ChangeNotifier{
       }
     }
 
-    return await Geolocator.getCurrentPosition();
+    _location = await Geolocator.getCurrentPosition();
+    return _location;
   }
 
-  Future<bool> findWeatherByLocation() async{
-    for(int j=0; j<10; j++)
-      getLocation();
-    if(location != null)
-      print("lat : ${location.latitude} and long: ${location.longitude}");
-    else
-      print("Location is null");
-    Weather weather = Weather(city: null);
-    String weatherCast = "";
-    for(int i=0 ; i<5 ; i++){
-      weatherCast = await weather.getCurrentWeather(location: location);
-      // print("here");
-      if(weatherCast.isNotEmpty)
-        break;
+  void addCity({Weather cityWeather}) async{
+    bool isReady = await cityWeather.updateWeather();
+    String cityName = cityWeather.getCity;
+    if(!cityExists(cityName) && isReady) {
+      _weatherDatas.add(cityWeather);
+      _cityWidgets.add(CityTile(cityName));
     }
-    if(weatherCast.isEmpty || jsonDecode(weatherCast)['cod'] == '404') {
-      print("city not found");
-      return false;
-    }
-    // print("weather cast : $weatherCast");
-    String cityName = jsonDecode(weatherCast)["name"];
-    addCity(cityName);
-    return true;
+    // print("widgets:");
+    // for(CityTile cityTile in _cityWidgets){
+    //   print("${cityTile.city} widget exists");
+    // }
+    // print("weathers:");
+    // for(Weather weather in _weatherDatas){
+    //   print("${weather.getCity} weather exists");
+    // }
   }
 
-  void addCity(String city) async{
-    if(!cityExists(city) && city.isNotEmpty){
-      Map dataMap = {'name': city, 'temperature': '?', 'weather': '?', 'id': 0, 'icon': WeatherIcons.cloud_refresh,
-      'humidity' : '?', 'pressure': '?', 'wind speed': '?', 'feels_like': '?'};
-      _weatherDataMaps.add(dataMap);
-      bool isRealCity = await updateWeather(city);
-      if(isRealCity) {
-        city = dataMap['name'];
-        _cityWidgets.add(CityTile(city));
-      }
-      notifyListeners();
-    }
-  }
-
-  void removeCity(String city){
-    if(cityExists(city)) {
-      for(Map weatherData in _weatherDataMaps){
-        if(weatherData['city'] == city){
-          _weatherDataMaps.remove(weatherData);
-          // print("$city weather removed from maps");
-          break;
-        }
-      }
-      for (CityTile cityTile in _cityWidgets) {
-        if (cityTile.city == city) {
-          _cityWidgets.remove(cityTile);
-          // print("$city weather removed from widgets");
-          break;
-        }
-      }
-      notifyListeners();
-    }
-  }
-
-  int cityNumbers(){
-    return _cityWidgets.length;
-  }
-
-  Map cityWeather(String city){
-    for(Map weatherData in _weatherDataMaps){
-      if(weatherData['name'] == city){
-        return weatherData;
+  Weather searchWeather({String cityName}){
+    for(Weather weather in _weatherDatas){
+      if(weather.getCity == cityName){
+        return weather;
       }
     }
     return null;
   }
 
-  Future<bool> updateWeather(String city) async{
-    Map weatherDataMap;
-    weatherDataMap = cityWeather(city);
-    Weather cityWeatherData = Weather(city: city);
-    String rawData = '';
-    int i = 0;
-    while(rawData.isEmpty && i < 5){
-      rawData = await cityWeatherData.getCurrentWeather();
-      i++;
-    }
-    if( rawData.isNotEmpty & rawData.contains("\"cod\":\"404\"") ){
-      removeCity(city);
+  bool cityExists(String cityName){
+    if(searchWeather(cityName: cityName) == null)
       return false;
-    }
-    else if (rawData.isNotEmpty) {
-        for (String key in weatherDataMap.keys) {
-          if(!jsonNotation.containsKey(key) )
-            continue;
-          String jsonSequence = jsonNotation[key];
-          List<String> sequence = jsonSequence.split(" ");
-          if(sequence.length == 3) {
-            weatherDataMap[key] =
-            jsonDecode(rawData)[sequence.elementAt(0)][int.parse(sequence.elementAt(1))][sequence.elementAt(2)]; //This is weather condition
-            // print(weatherDataMap[key]);
-          }else if(sequence.length == 2) {
-            String temperature = jsonDecode(rawData)[sequence.elementAt(0)][sequence.elementAt(1)].toString(); //This is temperature
-            if(temperature.length > 2)
-              temperature = temperature.substring(0,2);
-            if(temperature.contains('.'))
-              temperature = temperature.substring(0,1);
-            weatherDataMap[key] = temperature;
-            // print(weatherDataMap[key]);
-          }
-          else{
-            String name = jsonDecode(rawData)[sequence.elementAt(0)];
-            weatherDataMap[key] = name;
-          }
-        }
-        setIcon(weatherDataMap['name']);
-        for(String key in weatherDataMap.keys){
-          print("$key : $weatherDataMap[$key]");
-          break;
-        }
-    }
-    notifyListeners();
-    return true;
+    else
+      return true;
   }
 
-  bool cityExists(String city){
-    for(Map weatherData in _weatherDataMaps){
-      if(weatherData['name'] == city ){
-        return true;
+  void removeCity({String cityName}) {
+    if (cityExists(cityName)) {
+      _removeCityWidget(cityName: cityName);
+      _removeCityWeather(cityName: cityName);
+    }
+  }
+
+  void _removeCityWidget({String cityName}){
+    CityTile cityTileToRemove;
+    for(CityTile cityTile in _cityWidgets){
+      if(cityTile.city == cityName){
+        cityTileToRemove = cityTile;
       }
     }
-    return false;
+    if(cityTileToRemove != null)
+      _cityWidgets.remove(cityTileToRemove);
   }
 
-  get weatherDataMaps{
-    return _weatherDataMaps;
+  void _removeCityWeather({String cityName}){
+    Weather weather = searchWeather(cityName: cityName);
+    if(weather != null)
+      _weatherDatas.remove(weather);
   }
 
-  get cityWidget{
-    return _cityWidgets;
+  int widgetNumbers(){
+    return _cityWidgets.length;
   }
 
-  void setIcon(String city){
-    Map weatherData = cityWeather(city);
-    if ( weatherData['id'] == 800 ){
-      var now = new DateTime.now();
-      List clearSky = weatherIdToIcon[800];
-      if( now.hour> 18 ) {
-        weatherData['icon'] = clearSky[1];
-      }else
-        weatherData['icon']= clearSky[0];
-    }
-    else
-      weatherData['icon']= weatherIdToIcon[weatherData['id']];
+  get weatherDatas{
+    return List.unmodifiable(_weatherDatas);
   }
 
-  void addOption(String option){
-    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
-    options[option.toLowerCase()] = true;
-    // for(Map map in _weatherDataMaps){
-    //   updateWeather(map['name']);
-    // }
-    notifyListeners();
-  }
-
-  void removeOption(String option){
-    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
-    options[option.toLowerCase()] = false;
-    updateAll();
-    notifyListeners();
-  }
-
-  void updateAll(){
-    for(Map map in _weatherDataMaps){
-      updateWeather(map['name']);
-    }
-  }
-
-  bool isOptionSelected(String option){
-    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
-    // print("in isOptionSelected: ${options[option.toLowerCase()]}");
-    return options[option.toLowerCase()];
-  }
-
-  Color getOptionButtonColor(String option){
-    option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
-    return isOptionSelected(option) ? Colors.indigo : Colors.black38;
-  }
-
-  get getOptions{
-    return options;
-  }
-
-  String getWeatherScreenPicture(String city){
-    Map weatherData = cityWeather(city);
-    int code = weatherData['id'];
-    // print('code is $code');
-    if(code == 800){
-      var now = new DateTime.now();
-      List clearSky = codeToPicture[800];
-      if( now.hour> 18 ) {
-        return clearSky[1];
-      }else
-        return clearSky[0];
-    }
-    return codeToPicture[code];
+  get cityWidgets{
+    return List.unmodifiable(_cityWidgets);
   }
 }

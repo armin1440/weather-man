@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:learner/logic/Data.dart';
+import 'package:learner/logic/DataManager.dart';
 import 'package:provider/provider.dart';
+import 'TransparentWhiteBox.dart';
 
 const TextStyle informationTextStyle = TextStyle(color: Colors.black, fontSize: 25, decorationColor: Colors.lightBlueAccent);
 
@@ -20,21 +21,21 @@ class _WeatherScreenState extends State<WeatherScreen> {
   @override
   void initState() {
     super.initState();
-    image = Provider.of<Data>(context, listen: false).getWeatherScreenPicture(widget.city);
+    image = Provider.of<DataManager>(context, listen: false).getWeatherScreenPicture(widget.city);
     weatherScreenWidgets = [
-      Consumer<Data>(
+      Consumer<DataManager>(
         builder: (context, data,child){
           return Text(
-            "${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['weather']}",
+            "${Provider.of<DataManager>(context, listen: false).getWeatherInfo(widget.city,'weather description')}",
             style: informationTextStyle,
           );
         }
       ),
       SizedBox(height: 20,),
-      Consumer<Data>(
+      Consumer<DataManager>(
         builder: (context, data, child){
           return  Text(
-            "${Provider.of<Data>(context, listen: false).cityWeather(widget.city)['temperature']} \u2103",
+            "${Provider.of<DataManager>(context, listen: false).getWeatherInfo(widget.city,'temperature')} \u2103",
             style: informationTextStyle,
           );
         },
@@ -44,11 +45,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
     initOption("feels_like");
     initOption("pressure");
     initOption("wind speed");
-    Provider.of<Data>(context, listen: false).updateWeather(widget.city);
+    Provider.of<DataManager>(context, listen: false).updateWeather(widget.city);
   }
 
   void initOption(String option){
-    if ( Provider.of<Data>(context, listen: false).isOptionSelected(option) )
+    if ( Provider.of<DataManager>(context, listen: false).isOptionSelected(option) )
       addOption(option);
   }
 
@@ -83,7 +84,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 SizedBox(height: 30,),
                 Expanded(
                   child: TransparentWhiteBox(
-                    child: Consumer<Data>(
+                    child: Consumer<DataManager>(
                       builder: (context, data, child){
                             return ListView.builder(
                               shrinkWrap: true,
@@ -102,7 +103,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   child: TransparentWhiteBox(
                     child: FlatButton(
                       child: Text("update", style: informationTextStyle),
-                      onPressed: () => Provider.of<Data>(context, listen: false).updateWeather(widget.city),
+                      onPressed: () => Provider.of<DataManager>(context, listen: false).updateWeather(widget.city),
                     ),
                   ),
                 ),
@@ -119,14 +120,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   void addOption(String option){
     Map optionToUnit = { 'humidity': '%', 'wind speed': 'km/h', 'feels_like': '\u2103', 'pressure': 'hPa'};
-    if( Provider.of<Data>(context, listen: false).getOptions[option] == true) {
+    if( Provider.of<DataManager>(context, listen: false).getOptions[option] == true) {
       weatherScreenWidgets.add(SizedBox(height: 20,));
       weatherScreenWidgets.add(
-        Consumer<Data>(
+        Consumer<DataManager>(
           builder: (context, data, child) {
             return Text(
-              "${option.replaceAll("_", " ")} : ${Provider.of<Data>(context, listen: false)
-                  .cityWeather(widget.city)[option]} ${optionToUnit[option]}",
+              "${option.replaceAll("_", " ")} : ${Provider.of<DataManager>(context, listen: false)
+                  .getWeatherInfo(widget.city,option)} ${optionToUnit[option]}",
               style: informationTextStyle,
             );
           },
@@ -136,26 +137,4 @@ class _WeatherScreenState extends State<WeatherScreen> {
     // print("addOption in weatherScreen called with option $option");
   }
 
-}
-
-class TransparentWhiteBox extends StatelessWidget {
-  const TransparentWhiteBox({
-    @required this.child,
-  });
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Color(0x4CDDDDDD),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: child,
-      )
-    );
-  }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:learner/logic/Data.dart';
+import 'package:learner/logic/DataManager.dart';
 import 'ColorfulBox.dart';
 import 'package:provider/provider.dart';
-import 'OptionsScreen.dart';
+import 'NavigationBar.dart';
 
 class CitiesScreen extends StatelessWidget {
   final TextEditingController _textEditingController = TextEditingController();
@@ -32,7 +32,7 @@ class CitiesScreen extends StatelessWidget {
                         child: FlatButton(
                           child: Icon(Icons.add, size: 30, color: Colors.white,),
                           onPressed: () {
-                              Provider.of<Data>(context, listen: false).addCity(_textEditingController.text);
+                              Provider.of<DataManager>(context, listen: false).addCityByName(_textEditingController.text);
                               _textEditingController.clear();
                           },
                         ),
@@ -40,7 +40,7 @@ class CitiesScreen extends StatelessWidget {
                       SizedBox(
                         width: 50,
                         child: FlatButton(
-                            onPressed: () => Provider.of<Data>(context, listen: false).findWeatherByLocation(),
+                            onPressed: () => Provider.of<DataManager>(context, listen: false).findWeatherByLocation(),
                             child: Icon(Icons.location_on_outlined, size: 30, color: Colors.white,),
                         ),
                       )
@@ -51,13 +51,13 @@ class CitiesScreen extends StatelessWidget {
                   ),
               SizedBox(height: 30,),
               Expanded(
-                child: Consumer<Data>(
+                child: Consumer<DataManager>(
                   builder: (context, data, child){
                     return ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
-                      itemCount: Provider.of<Data>(context).cityNumbers(),
-                      itemBuilder: (context, index) => Provider.of<Data>(context).cityWidget[index],
+                      itemCount: Provider.of<DataManager>(context).cityNumbers(),
+                      itemBuilder: (context, index) => Provider.of<DataManager>(context).cityWidgets[index],
                     );
                   },
                 ),
@@ -69,41 +69,5 @@ class CitiesScreen extends StatelessWidget {
     );
   }
 
-}
-
-class NavigationBar extends StatefulWidget {
-  static int pageIndex = 0;
-
-  @override
-  _NavigationBarState createState() => _NavigationBarState();
-}
-
-class _NavigationBarState extends State<NavigationBar> {
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      elevation: 16,
-      backgroundColor: Colors.blue.shade300,
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.location_city), label: "Cities"),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Options"),
-        ],
-      unselectedItemColor: Colors.indigo.shade300,
-      selectedItemColor: Colors.indigo.shade900,
-      currentIndex: NavigationBar.pageIndex,
-      showUnselectedLabels: false,
-      onTap: (index) {
-        NavigationBar.pageIndex = index;
-        if( NavigationBar.pageIndex == 1 ){
-          // Navigator.push(context, MaterialPageRoute( builder: (context) => OptionsScreen()));
-          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => OptionsScreen()));
-        }
-        else{
-          // Navigator.push(context, MaterialPageRoute( builder: (context) => CitiesScreen()));
-          Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => CitiesScreen()));
-        }
-      }
-    );
-  }
 }
 

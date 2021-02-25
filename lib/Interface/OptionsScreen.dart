@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:learner/logic/Data.dart';
-import 'package:provider/provider.dart';
-import 'CitiesScreen.dart';
+import 'Option.dart';
+import 'NavigationBar.dart';
 
 class OptionsScreen extends StatelessWidget {
 
@@ -40,42 +39,4 @@ class OptionsScreen extends StatelessWidget {
         ),
     );
   }
-}
-
-class Option extends StatelessWidget{
-  final String title;
-  Option(this.title);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 5),
-
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Color(0x9cDDDDDD),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: ListTile(
-          leading: Text(title),
-          trailing: Consumer<Data>(
-            builder: (context, data, child){
-              return FlatButton(
-                child: SizedBox(), // Only to prevent warning
-                shape: CircleBorder(),
-                color: Provider.of<Data>(context, listen: false).getOptionButtonColor(title),
-                onPressed: () {
-                  if ( !Provider.of<Data>(context, listen: false).isOptionSelected(title) )
-                    Provider.of<Data>(context, listen: false).addOption(title);
-                  else
-                    Provider.of<Data>(context, listen: false).removeOption(title);
-                },
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
 }
