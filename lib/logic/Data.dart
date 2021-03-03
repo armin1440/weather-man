@@ -5,8 +5,8 @@ import 'package:learner/logic/Weather.dart';
 
 class Data extends ChangeNotifier{
   Position _location;
-  List<CityTile> _cityWidgets = List<CityTile>();
-  List<Weather> _weatherDatas = List<Weather>();
+  List<CityTile> _cityWidgets =[];
+  List<Weather> _weatherDatas =[];
 
   Future<Position> getLocation() async {
     bool serviceEnabled;
@@ -57,6 +57,15 @@ class Data extends ChangeNotifier{
     // }
   }
 
+
+  void removeCity({String cityName}) {
+    if (cityExists(cityName)) {
+      _removeCityWidget(cityName: cityName);
+      _removeCityWeather(cityName: cityName);
+    }
+    notifyListeners();
+  }
+
   Weather searchWeather({String cityName}){
     for(Weather weather in _weatherDatas){
       if(weather.getCity == cityName){
@@ -71,14 +80,6 @@ class Data extends ChangeNotifier{
       return false;
     else
       return true;
-  }
-
-  void removeCity({String cityName}) {
-    if (cityExists(cityName)) {
-      _removeCityWidget(cityName: cityName);
-      _removeCityWeather(cityName: cityName);
-    }
-    notifyListeners();
   }
 
   void _removeCityWidget({String cityName}){

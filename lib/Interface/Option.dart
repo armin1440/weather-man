@@ -10,7 +10,6 @@ class Option extends StatelessWidget{
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 5),
-
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: Color(0x9cDDDDDD),
@@ -20,11 +19,16 @@ class Option extends StatelessWidget{
           leading: Text(title),
           trailing: Consumer<DataManager>(
             builder: (context, data, child){
-              return FlatButton(
-                child: SizedBox(), // Only to prevent warning
-                shape: CircleBorder(),
-                color: Provider.of<DataManager>(context, listen: false).getOptionButtonColor(title),
-                onPressed: () {
+              return GestureDetector(
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Provider.of<DataManager>(context, listen: false).getOptionButtonColor(title),
+                  ),
+                ), // Only to prevent warning
+                onTap: () {
                   if ( !Provider.of<DataManager>(context, listen: false).isOptionSelected(title) )
                     Provider.of<DataManager>(context, listen: false).addOption(title);
                   else

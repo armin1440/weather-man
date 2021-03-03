@@ -7,7 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:weather_icons/weather_icons.dart';
 import 'Konstants.dart';
 import 'Data.dart';
-import 'package:provider/provider.dart';
 
 class DataManager extends ChangeNotifier{
   Data data;

@@ -23,7 +23,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   void findWeatherOfHere() async{
     await Provider.of<DataManager>(context, listen: false).findWeatherByLocation();
-    Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (BuildContext context) => CitiesScreen()));
+    Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (BuildContext context) => MainScreen()));
   }
 
   @override

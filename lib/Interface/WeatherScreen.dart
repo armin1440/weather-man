@@ -15,7 +15,7 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
-  List<Widget> weatherScreenWidgets = List();
+  List<Widget> weatherScreenWidgets = [];
   String image = '';
 
   @override
@@ -101,9 +101,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 ),
                 Center(
                   child: TransparentWhiteBox(
-                    child: FlatButton(
+                    child: GestureDetector(
                       child: Text("update", style: informationTextStyle),
-                      onPressed: () => Provider.of<DataManager>(context, listen: false).updateWeather(widget.city),
+                      onTap: () => Provider.of<DataManager>(context, listen: false).updateWeather(widget.city),
                     ),
                   ),
                 ),
