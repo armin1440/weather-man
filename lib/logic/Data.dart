@@ -1,8 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:learner/Interface/CityTile.dart';
 import 'package:learner/logic/Weather.dart';
 
-class Data{
+class Data extends ChangeNotifier{
   Position _location;
   List<CityTile> _cityWidgets = List<CityTile>();
   List<Weather> _weatherDatas = List<Weather>();
@@ -45,6 +46,7 @@ class Data{
       _weatherDatas.add(cityWeather);
       _cityWidgets.add(CityTile(cityName));
     }
+    notifyListeners();
     // print("widgets:");
     // for(CityTile cityTile in _cityWidgets){
     //   print("${cityTile.city} widget exists");
@@ -76,6 +78,7 @@ class Data{
       _removeCityWidget(cityName: cityName);
       _removeCityWeather(cityName: cityName);
     }
+    notifyListeners();
   }
 
   void _removeCityWidget({String cityName}){

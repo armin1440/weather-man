@@ -7,9 +7,17 @@ import 'package:geolocator/geolocator.dart';
 import 'package:weather_icons/weather_icons.dart';
 import 'Konstants.dart';
 import 'Data.dart';
+import 'package:provider/provider.dart';
 
 class DataManager extends ChangeNotifier{
-  Data data = Data();
+  Data data;
+
+  void update(Data data){
+    // this.data = data;
+    notifyListeners();
+  }
+
+  DataManager(this.data);
 
   Future<bool> findWeatherByLocation() async{
     Position location = await data.getLocation();
