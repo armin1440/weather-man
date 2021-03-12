@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:learner/logic/DataManager.dart';
 import 'package:provider/provider.dart';
 import 'TransparentWhiteBox.dart';
-
-const TextStyle informationTextStyle = TextStyle(color: Colors.black, fontSize: 25, decorationColor: Colors.lightBlueAccent);
+import 'package:learner/logic/Konstants.dart';
 
 class WeatherScreen extends StatefulWidget {
   final String city;
@@ -69,7 +68,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
                   height: 50,
@@ -77,7 +76,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 TransparentWhiteBox(
                   child: Center(
                     child: Text("${widget.city}",
-                      style: informationTextStyle.copyWith(fontSize: 33),
+                      style: cityTitleWeatherScreenTextStyle,
                     ),
                   ),
                 ),

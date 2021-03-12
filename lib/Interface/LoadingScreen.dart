@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:learner/Interface/MainScreen.dart';
 import 'package:learner/logic/DataManager.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,7 @@ class LoadingScreen extends StatefulWidget {
 class _LoadingScreenState extends State<LoadingScreen>{
   final spinner = SpinKitCubeGrid(
     color: Colors.purple,
-    size: 80,
+    size: 100,
   );
 
   @override
@@ -39,10 +40,7 @@ class _LoadingScreenState extends State<LoadingScreen>{
               children: [
                 Text(
                   "WeatherMan",
-                  style: TextStyle(
-                    fontSize: 40,
-                    color: Colors.white
-                  ),
+                  style: GoogleFonts.aclonica(fontSize: 40, color: Colors.white),
                 ),
                 SizedBox(height: 60,),
                 spinner

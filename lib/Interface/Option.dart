@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:learner/logic/Konstants.dart';
 import 'package:provider/provider.dart';
 import 'package:learner/logic/DataManager.dart';
 
@@ -16,7 +17,7 @@ class Option extends StatelessWidget{
           borderRadius: BorderRadius.circular(12),
         ),
         child: ListTile(
-          leading: Text(title),
+          leading: Text(title, style: optionTextStyle),
           trailing: Consumer<DataManager>(
             builder: (context, data, child){
               return GestureDetector(

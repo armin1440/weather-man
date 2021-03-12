@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:learner/Interface/SearchBarButton.dart';
+import 'package:learner/Interface/TransparentWhiteBox.dart';
 import 'package:learner/logic/DataManager.dart';
 import 'ColorfulBox.dart';
 import 'package:provider/provider.dart';
 import 'Option.dart';
+import 'package:learner/logic/Konstants.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -28,7 +30,7 @@ class _MainScreenState extends State<MainScreen> {
       initCitiesScreen();
     if(optionsScreen == null)
       initOptionsScreen();
-    
+
     pages = [citiesScreen, optionsScreen];
   }
 
@@ -41,8 +43,8 @@ class _MainScreenState extends State<MainScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Center(child: Text("Options", style: TextStyle(fontSize: 33),)),
-              SizedBox(height: 10,),
+              TransparentWhiteBox(child: Center(child: Text("Options", style: bigOptionTextStyle,))),
+              SizedBox(height: 30,),
               Option("Humidity"),
               Option("Wind speed"),
               Option("Pressure"),

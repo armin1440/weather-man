@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 const Map jsonNotation = {'name': 'name','temperature': 'main temp', 'weather' : 'weather 0 description', 'id' : 'weather 0 id',
@@ -67,4 +68,7 @@ const Map codeToPicture = {
   231: 'thunderstorm.jpg', 232: 'thunderstorm.jpg',
 };
 final Map options = { 'humidity' : false, 'pressure': false, 'feels_like': false, 'wind speed': false};
-const TextStyle informationTextStyle = TextStyle(color: Colors.white, fontSize: 25, decorationColor: Colors.lightBlueAccent);
+final TextStyle informationTextStyle = GoogleFonts.oxygen(fontSize: 24, color: Colors.black);
+final TextStyle optionTextStyle = GoogleFonts.oxygen(fontSize: 20, color: Colors.black);
+final TextStyle bigOptionTextStyle = GoogleFonts.oxygen(fontSize: 40, color: Colors.black54);
+final TextStyle cityTitleWeatherScreenTextStyle = GoogleFonts.oxygen(fontSize: 40, color: Colors.black);

@@ -1,11 +1,12 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'ColorfulBox.dart';
 import 'WeatherScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:learner/logic/DataManager.dart';
 import 'package:weather_icons/weather_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
+// TextStyle(fontSize: 20, color: Colors.white)
 
 class CityTile extends StatelessWidget{
   final String _city;
@@ -24,7 +25,7 @@ class CityTile extends StatelessWidget{
     final ColorfulBox colorfulBox = ColorfulBox(
       GestureDetector(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => WeatherScreen(_city))),
-        child: ListTile(leading: Text(_city, style: TextStyle(fontSize: 20, color: Colors.white),),
+        child: ListTile(leading: Text(_city, style: GoogleFonts.oxygen(fontSize: 20, color: Colors.white),),
           trailing: SizedBox(width: 80,
             child: Row(children: <Widget>[
               Expanded(
