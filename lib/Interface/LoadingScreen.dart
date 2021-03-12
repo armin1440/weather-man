@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:learner/Interface/CitiesScreen.dart';
+import 'package:learner/Interface/MainScreen.dart';
 import 'package:learner/logic/DataManager.dart';
 import 'package:provider/provider.dart';
 

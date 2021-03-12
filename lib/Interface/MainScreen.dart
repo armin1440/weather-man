@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:learner/Interface/SearchBarButton.dart';
 import 'package:learner/logic/DataManager.dart';
 import 'ColorfulBox.dart';
 import 'package:provider/provider.dart';
@@ -13,16 +14,48 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final TextEditingController _textEditingController = TextEditingController();
   int pageIndex = 0;
-  Widget cities ;
-  Widget options ;
+  Widget citiesScreen;
+  Widget optionsScreen;
+  Color addButtonColor = Colors.white;
+  Color locationButtonColor = Colors.white;
   Widget pageContent;
   List<Widget> pages;
 
   @override
   void initState() {
     super.initState();
-    if(cities == null)
-      cities = SafeArea(
+    if(citiesScreen == null)
+      initCitiesScreen();
+    if(optionsScreen == null)
+      initOptionsScreen();
+    
+    pages = [citiesScreen, optionsScreen];
+  }
+
+  void initOptionsScreen(){
+    optionsScreen = SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 18.0, left: 10),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Center(child: Text("Options", style: TextStyle(fontSize: 33),)),
+              SizedBox(height: 10,),
+              Option("Humidity"),
+              Option("Wind speed"),
+              Option("Pressure"),
+              Option("Feels like"),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void initCitiesScreen(){
+    citiesScreen = SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Column(
@@ -38,19 +71,21 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       SizedBox(
                         width: 50,
-                        child: GestureDetector(
-                          child: Icon(Icons.add, size: 30, color: Colors.white,),
-                          onTap: () {
-                            Provider.of<DataManager>(context, listen: false).addCityByName(_textEditingController.text);
-                            _textEditingController.clear();
-                          },
+                        child: SearchBarButton( (){
+                          Provider.of<DataManager>(context, listen: false)
+                              .addCityByName(_textEditingController.text);
+                          _textEditingController.clear();
+                        },
+                          Icons.add,
                         ),
                       ),
                       SizedBox(
                         width: 50,
-                        child: GestureDetector(
-                          onTap: () => Provider.of<DataManager>(context, listen: false).findWeatherByLocation(),
-                          child: Icon(Icons.location_on_outlined, size: 30, color: Colors.white,),
+                        child: SearchBarButton(
+                              (){
+                            Provider.of<DataManager>(context, listen: false).findWeatherByLocation();
+                          },
+                          Icons.location_on_outlined,
                         ),
                       )
                     ],
@@ -75,27 +110,6 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
     );
-    if(options == null)
-      options = SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 18.0, left: 10),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Center(child: Text("Options", style: TextStyle(fontSize: 33),)),
-              SizedBox(height: 10,),
-              Option("Humidity"),
-              Option("Wind speed"),
-              Option("Pressure"),
-              Option("Feels like"),
-            ],
-          ),
-        ),
-      ),
-    );
-    pages = [cities, options];
   }
 
   @override
