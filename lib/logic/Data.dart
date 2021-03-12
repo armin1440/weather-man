@@ -1,12 +1,29 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:learner/Interface/CityTile.dart';
 import 'package:learner/logic/Weather.dart';
+import 'dart:io';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'package:path_provider/path_provider.dart';
 
 class Data extends ChangeNotifier{
+  File _cityNamesFile;
+  String _filePath;
   Position _location;
   List<CityTile> _cityWidgets =[];
   List<Weather> _weatherDatas =[];
+
+  Data(){
+    try {
+      _getAccessToStoragePermission();
+      _createFile();
+    }
+    catch (e){
+      print(e);
+    }
+  }
 
   Future<Position> getLocation() async {
     bool serviceEnabled;
@@ -39,34 +56,86 @@ class Data extends ChangeNotifier{
     return _location;
   }
 
-  void addCity({Weather cityWeather}) async{
+  void addCity({@required Weather cityWeather}) async{
     bool isReady = await cityWeather.updateWeather();
     String cityName = cityWeather.getCity;
-    if(!cityExists(cityName) && isReady) {
+    if(!cityExists(cityName: cityName) && isReady) {
       _weatherDatas.add(cityWeather);
       _cityWidgets.add(CityTile(cityName));
+      _saveToFile(cityName: cityName);
     }
     notifyListeners();
-    // print("widgets:");
-    // for(CityTile cityTile in _cityWidgets){
-    //   print("${cityTile.city} widget exists");
-    // }
-    // print("weathers:");
-    // for(Weather weather in _weatherDatas){
-    //   print("${weather.getCity} weather exists");
-    // }
   }
 
+  void _getAccessToStoragePermission() async{
+    if (!await Permission.storage.isGranted)
+      await Permission.storage.request();
+  }
 
-  void removeCity({String cityName}) {
-    if (cityExists(cityName)) {
+  void _createFile() async{
+    final directory = await getApplicationDocumentsDirectory();
+    _filePath = directory.path + "/cities.text";
+    _cityNamesFile = File(_filePath);
+    _cityNamesFile.createSync(recursive: true);
+  }
+
+  void _saveToFile({@required String cityName}) async{
+    if (! await _cityNameExistInFile(cityName: cityName)) {
+      var ioSink = _cityNamesFile.openWrite(mode: FileMode.append);
+      ioSink.write("$cityName\n");
+      ioSink.close();
+    }
+  }
+
+  Future<bool> _cityNameExistInFile({@required String cityName}) async{
+    Stream<String> lines = _cityNamesFile.openRead()
+        .transform(utf8.decoder)
+        .transform(LineSplitter());
+    try {
+      await for (var line in lines) {
+        if(line == cityName)
+          return true;
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+
+    return false;
+  }
+
+  void removeCity({@required String cityName}) {
+    if (cityExists(cityName: cityName)) {
       _removeCityWidget(cityName: cityName);
       _removeCityWeather(cityName: cityName);
+      _updateCityNameFile();
     }
     notifyListeners();
   }
 
-  Weather searchWeather({String cityName}){
+  void _updateCityNameFile(){
+    _clearFile();
+    _addCitiesFromWeatherDatas();
+  }
+
+  void _clearFile() async{
+    var ioSink = _cityNamesFile.openWrite(mode: FileMode.write);
+    int fileLength=1;
+    while(fileLength!=0){
+      ioSink.write("");
+      fileLength = await _cityNamesFile.length();
+    }
+    ioSink.close();
+  }
+  
+  void _addCitiesFromWeatherDatas() async{
+    var ioSink = _cityNamesFile.openWrite(mode: FileMode.write);
+    for(Weather weather in _weatherDatas){
+      ioSink.write(weather.getCity+"\n");
+    }
+    ioSink.close();
+  }
+
+  Weather searchWeather({@required String cityName}){
     for(Weather weather in _weatherDatas){
       if(weather.getCity == cityName){
         return weather;
@@ -75,14 +144,14 @@ class Data extends ChangeNotifier{
     return null;
   }
 
-  bool cityExists(String cityName){
+  bool cityExists({@required String cityName}){
     if(searchWeather(cityName: cityName) == null)
       return false;
     else
       return true;
   }
 
-  void _removeCityWidget({String cityName}){
+  void _removeCityWidget({@required String cityName}){
     CityTile cityTileToRemove;
     for(CityTile cityTile in _cityWidgets){
       if(cityTile.city == cityName){

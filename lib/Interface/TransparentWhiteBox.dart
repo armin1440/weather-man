@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TransparentWhiteBox extends StatelessWidget {
   const TransparentWhiteBox({
-    @required this.child,
+    this.child,
   });
 
   final Widget child;

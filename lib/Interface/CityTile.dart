@@ -13,7 +13,7 @@ class CityTile extends StatelessWidget{
     child: Icon(Icons.delete),
     alignment: Alignment.center,
     decoration: BoxDecoration(
-        gradient: RadialGradient(colors: [Colors.green, Colors.lightBlue], radius: 2 )
+        gradient: RadialGradient(colors: [Colors.red, Colors.lightBlue], radius: 2 )
     ),
   );
 
@@ -48,7 +48,7 @@ class CityTile extends StatelessWidget{
         onDismissed: (direction){
           Provider.of<DataManager>(context, listen: false).removeCity(_city);
         },
-        key: Key(colorfulBox.toStringShort()),
+        key: Key(_city),
         background: dismissBackground,
         child: colorfulBox,
       ),

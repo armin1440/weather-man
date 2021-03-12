@@ -9,7 +9,7 @@ class LoadingScreen extends StatefulWidget {
   _LoadingScreenState createState() => _LoadingScreenState();
 }
 
-class _LoadingScreenState extends State<LoadingScreen> {
+class _LoadingScreenState extends State<LoadingScreen>{
   final spinner = SpinKitCubeGrid(
     color: Colors.purple,
     size: 80,
@@ -18,12 +18,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
-    findWeatherOfHere();
+    loadCities();
   }
-
-  void findWeatherOfHere() async{
-    await Provider.of<DataManager>(context, listen: false).findWeatherByLocation();
-    Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (BuildContext context) => MainScreen()));
+  
+  void loadCities() async{
+    await Provider.of<DataManager>(context, listen: false).loadCitiesFromFile();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
   }
 
   @override
@@ -38,7 +38,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Weather Man",
+                  "WeatherMan",
                   style: TextStyle(
                     fontSize: 40,
                     color: Colors.white

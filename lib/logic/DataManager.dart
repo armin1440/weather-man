@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:learner/logic/Weather.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:weather_icons/weather_icons.dart';
 import 'Konstants.dart';
 import 'Data.dart';
@@ -50,7 +52,7 @@ class DataManager extends ChangeNotifier{
   }
 
   void addCityByName(String city) async{
-    if(!data.cityExists(city) && city.isNotEmpty){
+    if(!data.cityExists(cityName: city) && city.isNotEmpty){
       Weather cityWeather = Weather(city: city);
       bool isRealCity = await cityWeather.updateWeather();
       if(isRealCity) {
@@ -93,14 +95,12 @@ class DataManager extends ChangeNotifier{
   void addOption(String option){
     option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
     options[option.toLowerCase()] = true;
-    //updateAll();
     notifyListeners();
   }
 
   void removeOption(String option){
     option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
     options[option.toLowerCase()] = false;
-    // updateAll();
     notifyListeners();
   }
 
@@ -112,7 +112,6 @@ class DataManager extends ChangeNotifier{
 
   bool isOptionSelected(String option){
     option = option.toLowerCase() == 'feels like' ? 'feels_like' : option;
-    // print("in isOptionSelected: ${options[option.toLowerCase()]}");
     return options[option.toLowerCase()];
   }
 
@@ -167,5 +166,41 @@ class DataManager extends ChangeNotifier{
       return weather.icon;
     else
       return WeatherIcons.refresh;
+  }
+
+  Future<void> loadCitiesFromFile() async{
+    File cityNameFile = await loadFile();
+    if(cityNameFile != null){
+      List<String> cityNames = await getCityNamesFrom(cityNameFile);
+      for(String cityName in cityNames){
+        addCityByName(cityName);
+      }
+    }
+  }
+
+  Future<List<String>> getCityNamesFrom(File cityNamesFile) async{
+    List<String> cityNames = [];
+    Stream<String> citiesInFile = cityNamesFile.openRead()
+    .transform(utf8.decoder)
+    .transform(LineSplitter());
+    try{
+      await for(var cityName in citiesInFile){
+        cityNames.add(cityName);
+      }
+    }
+    catch(e){
+      print('$e');
+    }
+    return cityNames;
+  }
+
+  Future<File> loadFile() async{
+    var directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + '/cities.text';
+    File cityNameFile = File(path);
+    if (cityNameFile.existsSync()){
+      return cityNameFile;
+    }
+    return null;
   }
 }
